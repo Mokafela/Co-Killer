@@ -133,7 +133,7 @@ def main():
     
     renamed_configs = []
     for i, cfg in enumerate(working_configs, 1):
-        renamed = rename_config(cfg, f"Mokafela-Config-{i}")
+        renamed = rename_config(cfg, f"Mokafela#{i}")
         renamed_configs.append(renamed)
     
     if renamed_configs:
