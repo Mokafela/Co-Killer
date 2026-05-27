@@ -1,6 +1,8 @@
 name: Update Subscription
 
 on:
+  push:
+    branches: [ "master" ]
   schedule:
     - cron: "0 */6 * * *" # Every 6 hours
   workflow_dispatch: # Allow manual trigger
