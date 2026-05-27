@@ -63,6 +63,27 @@ def parse_config(config):
         pass
     return None
 
+def rename_config(config, name):
+    """Renames a config's alias/remark to the given name."""
+    try:
+        if config.startswith('vmess://'):
+            b64_data = config[8:]
+            b64_data += "=" * ((4 - len(b64_data) % 4) % 4)
+            json_data = base64.b64decode(b64_data).decode('utf-8')
+            data = json.loads(json_data)
+            data['ps'] = name
+            new_json_data = json.dumps(data)
+            new_b64 = base64.b64encode(new_json_data.encode('utf-8')).decode('utf-8')
+            return f"vmess://{new_b64}"
+            
+        elif config.startswith(('vless://', 'trojan://', 'ss://')):
+            parsed = urllib.parse.urlparse(config)
+            new_parsed = parsed._replace(fragment=urllib.parse.quote(name))
+            return urllib.parse.urlunparse(new_parsed)
+    except Exception:
+        pass
+    return config
+
 def test_config(config):
     """Tests if a config's IP/port is reachable. Returns config if true, else None."""
     parsed = parse_config(config)
@@ -105,8 +126,13 @@ def main():
                 
     print(f"Found {len(working_configs)} working configs.")
     
-    if working_configs:
-        sub_content = "\n".join(working_configs)
+    renamed_configs = []
+    for i, cfg in enumerate(working_configs, 1):
+        renamed = rename_config(cfg, f"Mokafela-Config-{i}")
+        renamed_configs.append(renamed)
+    
+    if renamed_configs:
+        sub_content = "\n".join(renamed_configs)
         b64_sub = base64.b64encode(sub_content.encode('utf-8')).decode('utf-8')
         
         with open('sub.txt', 'w', encoding='utf-8') as f:
