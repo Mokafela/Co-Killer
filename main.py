@@ -109,18 +109,25 @@ def test_config(config):
     return None
 
 def main():
-    if not CHANNEL_URL:
+    channel_env = os.getenv("CHANNEL_URL", "")
+    if not channel_env:
         print("CHANNEL_URL environment variable is missing.")
         return
 
-    print("Fetching configs...")
-    html = get_channel_html(CHANNEL_URL)
-    if not html:
-        print("Failed to get HTML.")
-        return
-        
-    configs = extract_configs(html)
-    print(f"Extracted {len(configs)} configs. Testing them now...")
+    urls = [url.strip() for url in channel_env.split(",") if url.strip()]
+    all_configs = []
+    
+    for url in urls:
+        print(f"Fetching configs from channel...")
+        html = get_channel_html(url)
+        if html:
+            extracted = extract_configs(html)
+            print(f"Extracted {len(extracted)} from this channel.")
+            all_configs.extend(extracted)
+            
+    # Remove duplicates across all channels
+    configs = list(set(all_configs))
+    print(f"Total unique configs extracted: {len(configs)}. Testing them now...")
     
     working_configs = []
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
