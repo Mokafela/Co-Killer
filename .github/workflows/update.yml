@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "master" ]
   schedule:
-    - cron: "0 */6 * * *" # Every 6 hours
+    - cron: "*/15 * * * *" # Every 15 mins
   workflow_dispatch: # Allow manual trigger
 
 jobs:
