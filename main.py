@@ -5,9 +5,10 @@ import json
 import urllib.parse
 import socket
 import re
+import os
 from concurrent.futures import ThreadPoolExecutor
 
-CHANNEL_URL = "https://t.me/s/subioir"
+CHANNEL_URL = os.getenv("CHANNEL_URL", "")
 TIMEOUT = 3  # seconds for TCP ping
 MAX_WORKERS = 20
 
@@ -108,7 +109,11 @@ def test_config(config):
     return None
 
 def main():
-    print(f"Fetching configs from {CHANNEL_URL}...")
+    if not CHANNEL_URL:
+        print("CHANNEL_URL environment variable is missing.")
+        return
+
+    print("Fetching configs...")
     html = get_channel_html(CHANNEL_URL)
     if not html:
         print("Failed to get HTML.")
