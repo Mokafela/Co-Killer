@@ -138,8 +138,8 @@ def main():
                 
     print(f"Found {len(working_configs)} working configs.")
     
-    # Limit to 50 configs
-    working_configs = working_configs[:50]
+    # Limit to 60 configs
+    working_configs = working_configs[:60]
     
     # Add dummy config for repo name
     dummy_config = "vless://00000000-0000-0000-0000-000000000000@1.1.1.1:8080?encryption=none&security=none&type=tcp#" + urllib.parse.quote("Mokafela/Co-Killer")
