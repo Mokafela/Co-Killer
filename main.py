@@ -131,12 +131,18 @@ def main():
                 
     print(f"Found {len(working_configs)} working configs.")
     
-    renamed_configs = []
+    # Limit to 50 configs
+    working_configs = working_configs[:50]
+    
+    # Add dummy config for repo name
+    dummy_config = "vless://00000000-0000-0000-0000-000000000000@1.1.1.1:8080?encryption=none&security=none&type=tcp#" + urllib.parse.quote("Mokafela/Co-Killer")
+    renamed_configs = [dummy_config]
+    
     for i, cfg in enumerate(working_configs, 1):
         renamed = rename_config(cfg, f"Mokafela#{i}")
         renamed_configs.append(renamed)
     
-    if renamed_configs:
+    if len(renamed_configs) > 1: # More than just the dummy config
         sub_content = "\n".join(renamed_configs)
         b64_sub = base64.b64encode(sub_content.encode('utf-8')).decode('utf-8')
         
