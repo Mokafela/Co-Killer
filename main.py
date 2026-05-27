@@ -145,8 +145,33 @@ def main():
     dummy_config = "vless://00000000-0000-0000-0000-000000000000@1.1.1.1:8080?encryption=none&security=none&type=tcp#" + urllib.parse.quote("Mokafela/Co-Killer")
     renamed_configs = [dummy_config]
     
+    # Get country flags via IP-API batch endpoint
+    def country_to_flag(code):
+        if not code or len(code) != 2: return "🏳️"
+        return chr(ord(code[0].upper()) + 127397) + chr(ord(code[1].upper()) + 127397)
+        
+    queries = []
+    host_to_cfg = {}
+    for cfg in working_configs:
+        parsed = parse_config(cfg)
+        if parsed and parsed[0]:
+            queries.append({"query": parsed[0]})
+            host_to_cfg[cfg] = parsed[0]
+            
+    flag_map = {}
+    if queries:
+        try:
+            res = requests.post("http://ip-api.com/batch", json=queries, timeout=10)
+            for item in res.json():
+                if item.get("status") == "success":
+                    flag_map[item["query"]] = country_to_flag(item.get("countryCode", ""))
+        except Exception as e:
+            print(f"Error fetching IP data: {e}")
+
     for i, cfg in enumerate(working_configs, 1):
-        renamed = rename_config(cfg, f"Mokafela#{i}")
+        host = host_to_cfg.get(cfg, "")
+        flag = flag_map.get(host, "🏳️")
+        renamed = rename_config(cfg, f"{flag} Mokafela#{i}")
         renamed_configs.append(renamed)
     
     if len(renamed_configs) > 1: # More than just the dummy config
