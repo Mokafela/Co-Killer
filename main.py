@@ -119,10 +119,12 @@ def test_config(config):
             text=True,
             timeout=10
         )
-        if proc.returncode == 0 and "delay" in proc.stdout.lower():
+        if proc.returncode == 0 and ("delay" in proc.stdout.lower() or "passed" in proc.stdout.lower()):
             return config, True
-    except Exception:
-        pass
+        else:
+            print(f"HTTP Failed | RC: {proc.returncode} | OUT: {proc.stdout.strip()} | ERR: {proc.stderr.strip()}")
+    except Exception as e:
+        print(f"HTTP Exception: {e}")
 
     return config, False
 
