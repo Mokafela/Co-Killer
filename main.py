@@ -29,12 +29,22 @@ def extract_configs(html):
     soup = BeautifulSoup(html, 'html.parser')
     configs = []
     
-    # Text in telegram channel messages often has vmess:// etc.
     text = soup.get_text()
+    search_text = text
+    
+    # Attempt Base64 decode for sub links
+    try:
+        clean_text = text.strip()
+        clean_text += "=" * ((4 - len(clean_text) % 4) % 4)
+        decoded = base64.b64decode(clean_text).decode('utf-8')
+        if 'vmess://' in decoded or 'vless://' in decoded:
+            search_text += "\n" + decoded
+    except Exception:
+        pass
     
     # Regex to match vmess, vless, trojan, ss URLs
-    pattern = re.compile(r'(vmess://[a-zA-Z0-9+/=]+)|((?:vless|trojan|ss)://[^\s<]+)')
-    matches = pattern.findall(text)
+    pattern = re.compile(r'(vmess://[a-zA-Z0-9+/=]+)|((?:vless|trojan|ss)://[^\s<"\'>]+)')
+    matches = pattern.findall(search_text)
     
     for match in matches:
         if match[0]:
