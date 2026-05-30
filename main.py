@@ -158,7 +158,8 @@ def main():
             
     # Remove duplicates across all channels
     configs = list(set(all_configs))
-    print(f"Total unique configs extracted: {len(configs)}. Testing them now...")
+    total = len(configs)
+    print(f"Total unique configs extracted: {total}. Testing them now...")
     
     working_configs = []
     passed_configs = set()
@@ -170,8 +171,9 @@ def main():
         pass
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        results = executor.map(test_config, configs)
-        for res in results:
+        for i, res in enumerate(executor.map(test_config, configs), 1):
+            if i % 10 == 0 or i == total:
+                print(f"Progress: Tested {i}/{total} configs...")
             if res:
                 cfg, http_pass = res
                 working_configs.append(cfg)
