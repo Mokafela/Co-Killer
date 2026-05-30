@@ -28,10 +28,11 @@ jobs:
 
       - name: Install xray-knife
         run: |
-          wget https://github.com/lilendian0x00/xray-knife/releases/latest/download/xray-knife-linux-amd64.zip
-          unzip xray-knife-linux-amd64.zip
-          chmod +x xray-knife
-          sudo mv xray-knife /usr/local/bin/
+          wget https://github.com/lilendian0x00/xray-knife/releases/latest/download/Xray-knife-linux-64.zip -O knife.zip
+          unzip knife.zip
+          find . -type f -name "*knife*" ! -name "*.zip" -exec chmod +x {} \;
+          find . -type f -name "*knife*" ! -name "*.zip" -exec sudo mv {} /usr/local/bin/xray-knife \;
+
 
 
       - name: Run Collector and Tester
