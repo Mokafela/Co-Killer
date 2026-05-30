@@ -6,6 +6,7 @@ import urllib.parse
 import socket
 import re
 import os
+import subprocess
 from concurrent.futures import ThreadPoolExecutor
 
 CHANNEL_URL = os.getenv("CHANNEL_URL", "")
@@ -95,6 +96,7 @@ def test_config(config):
     if not host or not port:
         return None
         
+    tcp_pass = False
     try:
         # Basic TCP Ping
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -102,11 +104,27 @@ def test_config(config):
         result = sock.connect_ex((host, port))
         sock.close()
         if result == 0:
-            return config
+            tcp_pass = True
     except Exception:
         pass
     
-    return None
+    if not tcp_pass:
+        return None
+
+    # Google 403 test using xray-knife
+    try:
+        proc = subprocess.run(
+            ["xray-knife", "net", "http", "-u", config],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        if proc.returncode == 0 and "delay" in proc.stdout.lower():
+            return config, True
+    except Exception:
+        pass
+
+    return config, False
 
 def main():
     channel_env = os.getenv("CHANNEL_URL", "")
@@ -130,13 +148,17 @@ def main():
     print(f"Total unique configs extracted: {len(configs)}. Testing them now...")
     
     working_configs = []
+    passed_configs = set()
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         results = executor.map(test_config, configs)
         for res in results:
             if res:
-                working_configs.append(res)
+                cfg, http_pass = res
+                working_configs.append(cfg)
+                if http_pass:
+                    passed_configs.add(cfg)
                 
-    print(f"Found {len(working_configs)} working configs.")
+    print(f"Found {len(working_configs)} working configs ({len(passed_configs)} passed HTTP test).")
     
     # Limit to 60 configs
     working_configs = working_configs[:60]
@@ -171,7 +193,8 @@ def main():
     for i, cfg in enumerate(working_configs, 1):
         host = host_to_cfg.get(cfg, "")
         flag = flag_map.get(host, "🏳️")
-        renamed = rename_config(cfg, f"{flag} Mokafela#{i}")
+        pass_tag = " [PASS]" if cfg in passed_configs else ""
+        renamed = rename_config(cfg, f"{flag} Mokafela#{i}{pass_tag}")
         renamed_configs.append(renamed)
     
     if len(renamed_configs) > 1: # More than just the dummy config

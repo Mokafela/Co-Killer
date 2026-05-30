@@ -26,6 +26,14 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: Install xray-knife
+        run: |
+          wget https://github.com/lilendian0x00/xray-knife/releases/latest/download/xray-knife-linux-amd64.zip
+          unzip xray-knife-linux-amd64.zip
+          chmod +x xray-knife
+          sudo mv xray-knife /usr/local/bin/
+
+
       - name: Run Collector and Tester
         env:
           CHANNEL_URL: ${{ secrets.CHANNEL_URL }}
