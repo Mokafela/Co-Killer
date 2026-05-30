@@ -114,12 +114,13 @@ def test_config(config):
     # Google 403 test using xray-knife
     try:
         proc = subprocess.run(
-            ["xray-knife", "net", "http", "-u", config],
+            ["xray-knife", "http", "-c", config, "-u", "https://www.google.com", "-d", "10000"],
             capture_output=True,
             text=True,
-            timeout=10
+            timeout=15
         )
-        if proc.returncode == 0 and ("delay" in proc.stdout.lower() or "passed" in proc.stdout.lower()):
+        out_lower = proc.stdout.lower() + proc.stderr.lower()
+        if ("delay" in out_lower or "valid" in out_lower or "✅" in out_lower) and "❌" not in out_lower and "failed" not in out_lower:
             return config, True
         else:
             print(f"HTTP Failed | RC: {proc.returncode} | OUT: {proc.stdout.strip()} | ERR: {proc.stderr.strip()}")
