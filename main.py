@@ -173,7 +173,7 @@ def main():
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         for i, res in enumerate(executor.map(test_config, configs), 1):
             if i % 10 == 0 or i == total:
-                print(f"Progress: Tested {i}/{total} configs...")
+                print(f"Progress: Tested {i}/{total} configs (Remaining: {total - i})...")
             if res:
                 cfg, http_pass = res
                 working_configs.append(cfg)
