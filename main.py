@@ -162,6 +162,13 @@ def main():
     
     working_configs = []
     passed_configs = set()
+    
+    # Initialize xray-knife DB in single thread to prevent race condition
+    try:
+        subprocess.run(["xray-knife", "http", "-c", "vless://00000000-0000-0000-0000-000000000000@1.1.1.1:8080?encryption=none&security=none&type=tcp#dummy"], capture_output=True, timeout=5)
+    except Exception:
+        pass
+
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         results = executor.map(test_config, configs)
         for res in results:
