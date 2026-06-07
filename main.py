@@ -124,13 +124,13 @@ def test_config(config):
     # Google 403 test using xray-knife
     try:
         proc = subprocess.run(
-            ["xray-knife", "http", "-c", config, "-u", "https://www.google.com", "-d", "10000"],
+            ["xray-knife", "http", "-c", config, "-u", "https://gemini.google.com/app", "-d", "10000"],
             capture_output=True,
             text=True,
             timeout=15
         )
         out_lower = proc.stdout.lower() + proc.stderr.lower()
-        if ("delay" in out_lower or "valid" in out_lower or "✅" in out_lower) and "❌" not in out_lower and "failed" not in out_lower:
+        if ("delay" in out_lower or "valid" in out_lower or "✅" in out_lower) and "❌" not in out_lower and "failed" not in out_lower and "403" not in out_lower and "forbidden" not in out_lower and "region" not in out_lower:
             return config, True
         else:
             print(f"HTTP Failed | RC: {proc.returncode} | OUT: {proc.stdout.strip()} | ERR: {proc.stderr.strip()}")
@@ -176,8 +176,8 @@ def main():
                 print(f"Progress: Tested {i}/{total} configs (Remaining: {total - i})...")
             if res:
                 cfg, http_pass = res
-                working_configs.append(cfg)
                 if http_pass:
+                    working_configs.append(cfg)
                     passed_configs.add(cfg)
                 
     print(f"Found {len(working_configs)} working configs ({len(passed_configs)} passed HTTP test).")
