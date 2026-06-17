@@ -19,37 +19,13 @@ If you are searching for **V2Ray Iran**, **VLESS Iran**, **Free VMess**, or the 
 - 🏳️ **Country Flags**: Automatically detects the server IP and adds the correct country flag to the config name.
 - 📦 **Subscription Output**: Generates a standard Base64 `sub.txt` that can be imported directly into v2rayNG, Shadowrocket, NekoBox, or NapsternetV.
 
-## 🛠️ Requirements
+## 🔗 Subscription Link
 
-- Python 3.8+
-- [xray-knife](https://github.com/entynetproject/xray-knife) installed and available in your system's PATH.
+Copy the link below and import it into your V2Ray client (like v2rayNG, Shadowrocket, or NekoBox). The configs are tested and updated automatically!
 
-## 🚀 Quick Start
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Mokafela/Co-Killer.git
-   cd Co-Killer
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Set your channel sources:**
-   Export the `CHANNEL_URL` environment variable. You can pass a comma-separated list of URLs.
-   ```bash
-   export CHANNEL_URL="https://t.me/s/v2ray_configs_channel1,https://t.me/s/v2ray_configs_channel2"
-   ```
-
-4. **Run Config Killer:**
-   ```bash
-   python main.py
-   ```
-
-5. **Use the Subscription:**
-   The script will generate a `sub.txt` file. You can host this file on GitHub Pages, Cloudflare Pages, or a personal server to create a live subscription link for your V2Ray clients.
+```text
+https://raw.githubusercontent.com/Mokafela/Co-Killer/master/sub.txt
+```
 
 ## 📱 Supported Clients
 
