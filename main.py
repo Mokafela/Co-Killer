@@ -132,15 +132,15 @@ def test_config(config):
         out_lower = proc.stdout.lower() + proc.stderr.lower()
         if ("delay" in out_lower or "valid" in out_lower or "✅" in out_lower or "speed" in out_lower) and "❌" not in out_lower and "failed" not in out_lower and "403" not in out_lower and "forbidden" not in out_lower and "region" not in out_lower:
             speed_mbps = 0.0
-            match = re.search(r'([\d.]+)\s*(mb/s|kb/s|b/s)', out_lower)
+            match = re.search(r'speed:\s*([\d.]+)\s*(mbps|kbps|bps|mb/s|kb/s|b/s)', out_lower)
             if match:
                 val = float(match.group(1))
                 unit = match.group(2)
-                if unit == 'mb/s':
+                if unit in ('mb/s', 'mbps'):
                     speed_mbps = val
-                elif unit == 'kb/s':
+                elif unit in ('kb/s', 'kbps'):
                     speed_mbps = val / 1024.0
-                elif unit == 'b/s':
+                elif unit in ('b/s', 'bps'):
                     speed_mbps = val / (1024.0 * 1024.0)
             return config, True, speed_mbps
         else:
