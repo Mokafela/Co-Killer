@@ -124,20 +124,31 @@ def test_config(config):
     # Google 403 test using xray-knife
     try:
         proc = subprocess.run(
-            ["xray-knife", "http", "-c", config, "-u", "https://gemini.google.com/app", "-d", "10000"],
+            ["xray-knife", "http", "-c", config, "-u", "https://gemini.google.com/app", "-d", "10000", "--speedtest"],
             capture_output=True,
             text=True,
-            timeout=15
+            timeout=30
         )
         out_lower = proc.stdout.lower() + proc.stderr.lower()
-        if ("delay" in out_lower or "valid" in out_lower or "✅" in out_lower) and "❌" not in out_lower and "failed" not in out_lower and "403" not in out_lower and "forbidden" not in out_lower and "region" not in out_lower:
-            return config, True
+        if ("delay" in out_lower or "valid" in out_lower or "✅" in out_lower or "speed" in out_lower) and "❌" not in out_lower and "failed" not in out_lower and "403" not in out_lower and "forbidden" not in out_lower and "region" not in out_lower:
+            speed_mbps = 0.0
+            match = re.search(r'([\d.]+)\s*(mb/s|kb/s|b/s)', out_lower)
+            if match:
+                val = float(match.group(1))
+                unit = match.group(2)
+                if unit == 'mb/s':
+                    speed_mbps = val
+                elif unit == 'kb/s':
+                    speed_mbps = val / 1024.0
+                elif unit == 'b/s':
+                    speed_mbps = val / (1024.0 * 1024.0)
+            return config, True, speed_mbps
         else:
             print(f"HTTP Failed | RC: {proc.returncode} | OUT: {proc.stdout.strip()} | ERR: {proc.stderr.strip()}")
     except Exception as e:
         print(f"HTTP Exception: {e}")
 
-    return config, False
+    return config, False, 0.0
 
 def main():
     channel_env = os.getenv("CHANNEL_URL", "")
@@ -175,12 +186,19 @@ def main():
             if i % 10 == 0 or i == total:
                 print(f"Progress: Tested {i}/{total} configs (Remaining: {total - i})...")
             if res:
-                cfg, http_pass = res
+                if len(res) == 3:
+                    cfg, http_pass, speed = res
+                else:
+                    cfg, http_pass = res
+                    speed = 0.0
                 if http_pass:
-                    working_configs.append(cfg)
+                    working_configs.append((cfg, speed))
                     passed_configs.add(cfg)
                 
     print(f"Found {len(working_configs)} working configs ({len(passed_configs)} passed HTTP test).")
+    
+    # Sort by speed descending
+    working_configs.sort(key=lambda x: x[1], reverse=True)
     
     # Limit to 60 configs
     working_configs = working_configs[:60]
@@ -196,7 +214,7 @@ def main():
         
     queries = []
     host_to_cfg = {}
-    for cfg in working_configs:
+    for cfg, speed in working_configs:
         parsed = parse_config(cfg)
         if parsed and parsed[0]:
             queries.append({"query": parsed[0]})
@@ -212,11 +230,12 @@ def main():
         except Exception as e:
             print(f"Error fetching IP data: {e}")
 
-    for i, cfg in enumerate(working_configs, 1):
+    for i, (cfg, speed) in enumerate(working_configs, 1):
         host = host_to_cfg.get(cfg, "")
         flag = flag_map.get(host, "🏳️")
+        speed_tag = f" {speed:.2f}MB/s" if speed > 0 else ""
         pass_tag = " [PASS]" if cfg in passed_configs else ""
-        renamed = rename_config(cfg, f"{flag} Mokafela#{i}{pass_tag}")
+        renamed = rename_config(cfg, f"{flag} Mokafela#{i}{speed_tag}{pass_tag}")
         renamed_configs.append(renamed)
     
     if len(renamed_configs) > 1: # More than just the dummy config
