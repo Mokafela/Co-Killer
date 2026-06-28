@@ -19,13 +19,10 @@ If you are searching for **V2Ray Iran**, **VLESS Iran**, **Free VMess**, or the 
 - 🏳️ **Country Flags**: Automatically detects the server IP and adds the correct country flag to the config name.
 - 📦 **Subscription Output**: Generates a standard Base64 `sub.txt` that can be imported directly into v2rayNG, Shadowrocket, NekoBox, or NapsternetV.
 
-## 🔗 Subscription Link
+## 🔗 Subscription Links
 
-Copy the link below and import it into your V2Ray client (like v2rayNG, Shadowrocket, or NekoBox). The configs are tested and updated automatically!
-
-```text
-https://raw.githubusercontent.com/Mokafela/Co-Killer/master/sub.txt
-```
+<!-- SUBS_START -->
+<!-- SUBS_END -->
 
 ## 📱 Supported Clients
 

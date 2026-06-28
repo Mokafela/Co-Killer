@@ -97,11 +97,55 @@ def rename_config(config, name):
     return config
 
 def test_config(config):
-    """Tests bypassed."""
     parsed = parse_config(config)
     if not parsed:
-        return None
-    return config, True, 0.0
+        return config, False, 0.0
+        
+    host, port = parsed
+    if not host or not port:
+        return config, False, 0.0
+        
+    tcp_pass = False
+    try:
+        # Basic TCP Ping
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(TIMEOUT)
+        result = sock.connect_ex((host, port))
+        sock.close()
+        if result == 0:
+            tcp_pass = True
+    except Exception:
+        pass
+    
+    if not tcp_pass:
+        return config, False, 0.0
+
+    # Google 403 test using xray-knife
+    try:
+        proc = subprocess.run(
+            ["xray-knife", "http", "-c", config, "-u", "https://gemini.google.com/app", "-d", "10000", "--speedtest"],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        out_lower = proc.stdout.lower() + proc.stderr.lower()
+        if ("delay" in out_lower or "valid" in out_lower or "✅" in out_lower or "speed" in out_lower) and "❌" not in out_lower and "failed" not in out_lower and "403" not in out_lower and "forbidden" not in out_lower and "region" not in out_lower:
+            speed_mbps = 0.0
+            match = re.search(r'speed:\s*([\d.]+)\s*(mbps|kbps|bps|mb/s|kb/s|b/s)', out_lower)
+            if match:
+                val = float(match.group(1))
+                unit = match.group(2)
+                if unit in ('mb/s', 'mbps'):
+                    speed_mbps = val
+                elif unit in ('kb/s', 'kbps'):
+                    speed_mbps = val / 1024.0
+                elif unit in ('b/s', 'bps'):
+                    speed_mbps = val / (1024.0 * 1024.0)
+            return config, True, speed_mbps
+    except Exception as e:
+        pass
+
+    return config, False, 0.0
 
 def main():
     channel_env = os.getenv("CHANNEL_URL", "")
@@ -128,7 +172,11 @@ def main():
     working_configs = []
     passed_configs = set()
     
-    # Removed xray-knife init
+    # Initialize xray-knife DB in single thread to prevent race condition
+    try:
+        subprocess.run(["xray-knife", "http", "-c", "vless://00000000-0000-0000-0000-000000000000@1.1.1.1:8080?encryption=none&security=none&type=tcp#dummy"], capture_output=True, timeout=5)
+    except Exception:
+        pass
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         for i, res in enumerate(executor.map(test_config, configs), 1):
@@ -186,6 +234,7 @@ def main():
 
     configs_by_country = {}
     all_renamed = [dummy_config]
+    passed_renamed = [dummy_config]
 
     for i, (cfg, speed) in enumerate(working_configs, 1):
         host = host_to_cfg.get(cfg, "")
@@ -196,26 +245,116 @@ def main():
         renamed = rename_config(cfg, f"{flag} Mokafela#{i}{speed_tag}{pass_tag}")
         all_renamed.append(renamed)
         
+        if cfg in passed_configs:
+            passed_renamed.append(renamed)
+        
         if cc not in configs_by_country:
             configs_by_country[cc] = [dummy_config]
         configs_by_country[cc].append(renamed)
+    
+    os.makedirs("subs", exist_ok=True)
     
     if len(all_renamed) > 1: # More than just the dummy config
         sub_content = "\n".join(all_renamed)
         b64_sub = base64.b64encode(sub_content.encode('utf-8')).decode('utf-8')
         
-        with open('sub.txt', 'w', encoding='utf-8') as f:
+        with open('subs/sub.txt', 'w', encoding='utf-8') as f:
             f.write(b64_sub)
-        print("Subscription saved to sub.txt")
+        print("Subscription saved to subs/sub.txt")
+
+        # Write 403-passed sub
+        passed_count = 0
+        if len(passed_renamed) > 1:
+            passed_count = len(passed_renamed) - 1
+            passed_content = "\n".join(passed_renamed)
+            b64_passed = base64.b64encode(passed_content.encode('utf-8')).decode('utf-8')
+            with open('subs/sub-403.txt', 'w', encoding='utf-8') as f:
+                f.write(b64_passed)
+            print("Subscription saved to subs/sub-403.txt")
 
         # Write country subs
+        country_counts = {}
         for cc, cfgs in configs_by_country.items():
             if len(cfgs) > 1:
+                cc_count = len(cfgs) - 1
+                country_counts[cc] = cc_count
                 cc_content = "\n".join(cfgs)
                 b64_cc = base64.b64encode(cc_content.encode('utf-8')).decode('utf-8')
-                with open(f'sub-{cc}.txt', 'w', encoding='utf-8') as f:
+                with open(f'subs/sub-{cc}.txt', 'w', encoding='utf-8') as f:
                     f.write(b64_cc)
-                print(f"Subscription saved to sub-{cc}.txt")
+                print(f"Subscription saved to subs/sub-{cc}.txt")
+
+        # Update README
+        base_url = "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs"
+        md = [
+            "Copy the link below and import it into your V2Ray client (like v2rayNG, Shadowrocket, or NekoBox).",
+            "",
+            "### 🌍 All Configs",
+            f"Contains **{len(all_renamed)-1}** configurations.",
+            "```text",
+            f"{base_url}/sub.txt",
+            "```",
+            "",
+            "### ✅ 403 Passed Configs",
+            f"Contains **{passed_count}** configurations.",
+            "```text",
+            f"{base_url}/sub-403.txt",
+            "```",
+            "",
+            "### 🏳️ Country Specific Configs",
+            "| Country | Count | Subscription Link |",
+            "| :--- | :---: | :--- |"
+        ]
+        
+        sorted_cc = sorted(country_counts.items(), key=lambda x: x[1], reverse=True)
+        for cc, count in sorted_cc:
+            flag = country_to_flag(cc) if cc != "Unknown" else "🏳️"
+            md.append(f"| {flag} {cc} | {count} | `{base_url}/sub-{cc}.txt` |")
+            
+        new_md_content = "\n".join(md)
+        
+        try:
+            with open('README.md', 'r', encoding='utf-8') as f:
+                readme = f.read()
+            readme = re.sub(r'<!-- SUBS_START -->.*?<!-- SUBS_END -->', 
+                            f'<!-- SUBS_START -->\n{new_md_content}\n<!-- SUBS_END -->', 
+                            readme, flags=re.DOTALL)
+            with open('README.md', 'w', encoding='utf-8') as f:
+                f.write(readme)
+            print("README.md updated.")
+        except Exception as e:
+            print(f"Error updating README.md: {e}")
+
+        # Write JSON for frontend
+        json_data = [
+            {
+                "name": "All Configs",
+                "flag": "🌍",
+                "count": len(all_renamed) - 1,
+                "url": f"{base_url}/sub.txt"
+            }
+        ]
+        if passed_count > 0:
+            json_data.append({
+                "name": "403 Passed Configs",
+                "flag": "✅",
+                "count": passed_count,
+                "url": f"{base_url}/sub-403.txt"
+            })
+            
+        for cc, count in sorted_cc:
+            flag = country_to_flag(cc) if cc != "Unknown" else "🏳️"
+            json_data.append({
+                "name": f"{cc} Configs",
+                "flag": flag,
+                "count": count,
+                "url": f"{base_url}/sub-{cc}.txt"
+            })
+            
+        with open('subs/subs.json', 'w', encoding='utf-8') as f:
+            json.dump(json_data, f, ensure_ascii=False, indent=2)
+        print("Generated subs/subs.json for GitHub Pages.")
+
     else:
         print("No working configs found.")
 
