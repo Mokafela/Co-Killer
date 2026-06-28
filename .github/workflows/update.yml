@@ -26,15 +26,6 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Install xray-knife
-        run: |
-          wget https://github.com/lilendian0x00/xray-knife/releases/latest/download/Xray-knife-linux-64.zip -O knife.zip
-          unzip -o knife.zip xray-knife
-          chmod +x xray-knife
-          sudo mv xray-knife /usr/local/bin/
-
-
-
       - name: Run Collector and Tester
         env:
           CHANNEL_URL: ${{ secrets.CHANNEL_URL }}
@@ -44,6 +35,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add sub.txt
+          git add sub*.txt
           git commit -m "Auto-update subscription [skip ci]" || echo "No changes to commit"
           git push

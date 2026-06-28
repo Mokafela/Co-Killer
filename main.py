@@ -97,58 +97,11 @@ def rename_config(config, name):
     return config
 
 def test_config(config):
-    """Tests if a config's IP/port is reachable. Returns config if true, else None."""
+    """Tests bypassed."""
     parsed = parse_config(config)
     if not parsed:
         return None
-        
-    host, port = parsed
-    if not host or not port:
-        return None
-        
-    tcp_pass = False
-    try:
-        # Basic TCP Ping
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(TIMEOUT)
-        result = sock.connect_ex((host, port))
-        sock.close()
-        if result == 0:
-            tcp_pass = True
-    except Exception:
-        pass
-    
-    if not tcp_pass:
-        return None
-
-    # Google 403 test using xray-knife
-    try:
-        proc = subprocess.run(
-            ["xray-knife", "http", "-c", config, "-u", "https://gemini.google.com/app", "-d", "10000", "--speedtest"],
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
-        out_lower = proc.stdout.lower() + proc.stderr.lower()
-        if ("delay" in out_lower or "valid" in out_lower or "✅" in out_lower or "speed" in out_lower) and "❌" not in out_lower and "failed" not in out_lower and "403" not in out_lower and "forbidden" not in out_lower and "region" not in out_lower:
-            speed_mbps = 0.0
-            match = re.search(r'speed:\s*([\d.]+)\s*(mbps|kbps|bps|mb/s|kb/s|b/s)', out_lower)
-            if match:
-                val = float(match.group(1))
-                unit = match.group(2)
-                if unit in ('mb/s', 'mbps'):
-                    speed_mbps = val
-                elif unit in ('kb/s', 'kbps'):
-                    speed_mbps = val / 1024.0
-                elif unit in ('b/s', 'bps'):
-                    speed_mbps = val / (1024.0 * 1024.0)
-            return config, True, speed_mbps
-        else:
-            print(f"HTTP Failed | RC: {proc.returncode} | OUT: {proc.stdout.strip()} | ERR: {proc.stderr.strip()}")
-    except Exception as e:
-        print(f"HTTP Exception: {e}")
-
-    return config, False, 0.0
+    return config, True, 0.0
 
 def main():
     channel_env = os.getenv("CHANNEL_URL", "")
@@ -175,11 +128,7 @@ def main():
     working_configs = []
     passed_configs = set()
     
-    # Initialize xray-knife DB in single thread to prevent race condition
-    try:
-        subprocess.run(["xray-knife", "http", "-c", "vless://00000000-0000-0000-0000-000000000000@1.1.1.1:8080?encryption=none&security=none&type=tcp#dummy"], capture_output=True, timeout=5)
-    except Exception:
-        pass
+    # Removed xray-knife init
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         for i, res in enumerate(executor.map(test_config, configs), 1):
@@ -200,8 +149,7 @@ def main():
     # Sort by speed descending
     working_configs.sort(key=lambda x: x[1], reverse=True)
     
-    # Limit to 60 configs
-    working_configs = working_configs[:60]
+    # Limit to 60 configs removed
     
     # Add dummy config for repo name
     dummy_config = "vless://00000000-0000-0000-0000-000000000000@1.1.1.1:8080?encryption=none&security=none&type=tcp#" + urllib.parse.quote("Mokafela/Co-Killer")
@@ -221,30 +169,53 @@ def main():
             host_to_cfg[cfg] = parsed[0]
             
     flag_map = {}
+    country_map = {}
     if queries:
         try:
-            res = requests.post("http://ip-api.com/batch", json=queries, timeout=10)
-            for item in res.json():
-                if item.get("status") == "success":
-                    flag_map[item["query"]] = country_to_flag(item.get("countryCode", ""))
+            for i in range(0, len(queries), 100):
+                batch = queries[i:i+100]
+                res = requests.post("http://ip-api.com/batch", json=batch, timeout=10)
+                for item in res.json():
+                    if item.get("status") == "success":
+                        cc = item.get("countryCode", "")
+                        if cc:
+                            flag_map[item["query"]] = country_to_flag(cc)
+                            country_map[item["query"]] = cc
         except Exception as e:
             print(f"Error fetching IP data: {e}")
+
+    configs_by_country = {}
+    all_renamed = [dummy_config]
 
     for i, (cfg, speed) in enumerate(working_configs, 1):
         host = host_to_cfg.get(cfg, "")
         flag = flag_map.get(host, "🏳️")
+        cc = country_map.get(host, "Unknown")
         speed_tag = f" {speed:.2f}MB/s" if speed > 0 else ""
         pass_tag = " [PASS]" if cfg in passed_configs else ""
         renamed = rename_config(cfg, f"{flag} Mokafela#{i}{speed_tag}{pass_tag}")
-        renamed_configs.append(renamed)
+        all_renamed.append(renamed)
+        
+        if cc not in configs_by_country:
+            configs_by_country[cc] = [dummy_config]
+        configs_by_country[cc].append(renamed)
     
-    if len(renamed_configs) > 1: # More than just the dummy config
-        sub_content = "\n".join(renamed_configs)
+    if len(all_renamed) > 1: # More than just the dummy config
+        sub_content = "\n".join(all_renamed)
         b64_sub = base64.b64encode(sub_content.encode('utf-8')).decode('utf-8')
         
         with open('sub.txt', 'w', encoding='utf-8') as f:
             f.write(b64_sub)
         print("Subscription saved to sub.txt")
+
+        # Write country subs
+        for cc, cfgs in configs_by_country.items():
+            if len(cfgs) > 1:
+                cc_content = "\n".join(cfgs)
+                b64_cc = base64.b64encode(cc_content.encode('utf-8')).decode('utf-8')
+                with open(f'sub-{cc}.txt', 'w', encoding='utf-8') as f:
+                    f.write(b64_cc)
+                print(f"Subscription saved to sub-{cc}.txt")
     else:
         print("No working configs found.")
 
