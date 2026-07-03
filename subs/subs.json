@@ -2,62 +2,68 @@
   {
     "name": "All Configs",
     "flag": "🌍",
-    "count": 1267,
+    "count": 1374,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub.txt"
   },
   {
     "name": "403 Passed Configs",
     "flag": "✅",
-    "count": 1267,
+    "count": 1374,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-403.txt"
   },
   {
     "name": "CA Configs",
     "flag": "🇨🇦",
-    "count": 368,
+    "count": 385,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-CA.txt"
   },
   {
     "name": "Unknown Configs",
     "flag": "🏳️",
-    "count": 202,
+    "count": 246,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-Unknown.txt"
   },
   {
     "name": "US Configs",
     "flag": "🇺🇸",
-    "count": 118,
+    "count": 122,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-US.txt"
   },
   {
     "name": "NL Configs",
     "flag": "🇳🇱",
-    "count": 106,
+    "count": 105,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-NL.txt"
   },
   {
     "name": "DE Configs",
     "flag": "🇩🇪",
-    "count": 81,
+    "count": 99,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-DE.txt"
   },
   {
     "name": "GB Configs",
     "flag": "🇬🇧",
-    "count": 62,
+    "count": 55,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-GB.txt"
-  },
-  {
-    "name": "SC Configs",
-    "flag": "🇸🇨",
-    "count": 54,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-SC.txt"
   },
   {
     "name": "IT Configs",
     "flag": "🇮🇹",
-    "count": 52,
+    "count": 51,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-IT.txt"
+  },
+  {
+    "name": "LT Configs",
+    "flag": "🇱🇹",
+    "count": 43,
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-LT.txt"
+  },
+  {
+    "name": "SC Configs",
+    "flag": "🇸🇨",
+    "count": 40,
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-SC.txt"
   },
   {
     "name": "TR Configs",
@@ -68,7 +74,7 @@
   {
     "name": "FR Configs",
     "flag": "🇫🇷",
-    "count": 31,
+    "count": 33,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-FR.txt"
   },
   {
@@ -80,7 +86,7 @@
   {
     "name": "CH Configs",
     "flag": "🇨🇭",
-    "count": 15,
+    "count": 13,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-CH.txt"
   },
   {
@@ -92,26 +98,26 @@
   {
     "name": "ES Configs",
     "flag": "🇪🇸",
-    "count": 11,
+    "count": 10,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-ES.txt"
-  },
-  {
-    "name": "JP Configs",
-    "flag": "🇯🇵",
-    "count": 8,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-JP.txt"
   },
   {
     "name": "IN Configs",
     "flag": "🇮🇳",
-    "count": 8,
+    "count": 10,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-IN.txt"
   },
   {
-    "name": "AE Configs",
-    "flag": "🇦🇪",
+    "name": "JP Configs",
+    "flag": "🇯🇵",
+    "count": 9,
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-JP.txt"
+  },
+  {
+    "name": "PL Configs",
+    "flag": "🇵🇱",
     "count": 7,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-AE.txt"
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-PL.txt"
   },
   {
     "name": "LV Configs",
@@ -120,34 +126,34 @@
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-LV.txt"
   },
   {
+    "name": "KR Configs",
+    "flag": "🇰🇷",
+    "count": 7,
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-KR.txt"
+  },
+  {
     "name": "SE Configs",
     "flag": "🇸🇪",
-    "count": 7,
+    "count": 6,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-SE.txt"
   },
   {
-    "name": "PL Configs",
-    "flag": "🇵🇱",
-    "count": 6,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-PL.txt"
+    "name": "AE Configs",
+    "flag": "🇦🇪",
+    "count": 5,
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-AE.txt"
   },
   {
-    "name": "KR Configs",
-    "flag": "🇰🇷",
+    "name": "ZA Configs",
+    "flag": "🇿🇦",
     "count": 5,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-KR.txt"
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-ZA.txt"
   },
   {
     "name": "AT Configs",
     "flag": "🇦🇹",
     "count": 4,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-AT.txt"
-  },
-  {
-    "name": "LT Configs",
-    "flag": "🇱🇹",
-    "count": 4,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-LT.txt"
   },
   {
     "name": "RU Configs",
@@ -162,6 +168,12 @@
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-MY.txt"
   },
   {
+    "name": "ID Configs",
+    "flag": "🇮🇩",
+    "count": 4,
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-ID.txt"
+  },
+  {
     "name": "IR Configs",
     "flag": "🇮🇷",
     "count": 4,
@@ -174,16 +186,10 @@
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-AU.txt"
   },
   {
-    "name": "ID Configs",
-    "flag": "🇮🇩",
+    "name": "SG Configs",
+    "flag": "🇸🇬",
     "count": 3,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-ID.txt"
-  },
-  {
-    "name": "ZA Configs",
-    "flag": "🇿🇦",
-    "count": 3,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-ZA.txt"
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-SG.txt"
   },
   {
     "name": "CN Configs",
@@ -204,10 +210,10 @@
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-RO.txt"
   },
   {
-    "name": "SG Configs",
-    "flag": "🇸🇬",
+    "name": "EE Configs",
+    "flag": "🇪🇪",
     "count": 2,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-SG.txt"
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-EE.txt"
   },
   {
     "name": "IE Configs",
@@ -240,21 +246,21 @@
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-CZ.txt"
   },
   {
+    "name": "IL Configs",
+    "flag": "🇮🇱",
+    "count": 1,
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-IL.txt"
+  },
+  {
     "name": "KZ Configs",
     "flag": "🇰🇿",
     "count": 1,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-KZ.txt"
   },
   {
-    "name": "EE Configs",
-    "flag": "🇪🇪",
+    "name": "PK Configs",
+    "flag": "🇵🇰",
     "count": 1,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-EE.txt"
-  },
-  {
-    "name": "BY Configs",
-    "flag": "🇧🇾",
-    "count": 1,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-BY.txt"
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-PK.txt"
   }
 ]
