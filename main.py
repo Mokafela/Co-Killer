@@ -150,6 +150,9 @@ def lookup_countries_by_ip(ip_list: list[str]) -> dict[str, str]:
 
 # ── output ────────────────────────────────────────────────────────────────────
 
+REPO_RAW = "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split"
+
+
 def write_split(by_country: dict[str, list[str]]) -> None:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     for cc, cfgs in by_country.items():
@@ -158,6 +161,46 @@ def write_split(by_country: dict[str, list[str]]) -> None:
         with open(path, "w", encoding="utf-8") as f:
             f.write(b64)
         print(f"  Wrote {len(cfgs):>4} configs → {path}")
+
+
+def update_readme(by_country: dict[str, list[str]]) -> None:
+    readme_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.md")
+    try:
+        with open(readme_path, "r", encoding="utf-8") as f:
+            readme = f.read()
+    except FileNotFoundError:
+        print("  [WARN] README.md not found, skipping.")
+        return
+
+    sorted_cc = sorted(by_country.items(), key=lambda x: -len(x[1]))
+    total = sum(len(v) for v in by_country.values())
+
+    rows = [
+        "| Country | Count | Link |",
+        "| :--- | :---: | :--- |",
+    ]
+    for cc, cfgs in sorted_cc:
+        flag = country_to_flag(cc)
+        url = f"{REPO_RAW}/sub-{cc}.txt"
+        rows.append(f"| {flag} {cc} | {len(cfgs)} | `{url}` |")
+
+    block = "\n".join([
+        f"**{total} configs** split across {len(by_country)} countries. "
+        "Updated automatically every 15 minutes.",
+        "",
+        *rows,
+    ])
+
+    new_readme = re.sub(
+        r"<!-- SUBS_START -->.*?<!-- SUBS_END -->",
+        f"<!-- SUBS_START -->\n{block}\n<!-- SUBS_END -->",
+        readme,
+        flags=re.DOTALL,
+    )
+
+    with open(readme_path, "w", encoding="utf-8") as f:
+        f.write(new_readme)
+    print("  README.md updated.")
 
 
 # ── main ──────────────────────────────────────────────────────────────────────
@@ -234,9 +277,11 @@ def main() -> None:
     for cc, cfgs in sorted(by_country.items(), key=lambda x: -len(x[1])):
         print(f"  {country_to_flag(cc)} {cc}: {len(cfgs)}")
 
-    # ── 5. write split/ ───────────────────────────────────────────────────────
+    # ── 5. write split/ and update README ────────────────────────────────────
     print(f"\nWriting to ./{OUTPUT_DIR}/")
     write_split(by_country)
+    print("\nUpdating README…")
+    update_readme(by_country)
     print("\nDone.")
 
 
