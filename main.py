@@ -163,18 +163,8 @@ def write_split(by_country: dict[str, list[str]]) -> None:
         print(f"  Wrote {len(cfgs):>4} configs → {path}")
 
 
-def update_readme(by_country: dict[str, list[str]]) -> None:
-    readme_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.md")
-    try:
-        with open(readme_path, "r", encoding="utf-8") as f:
-            readme = f.read()
-    except FileNotFoundError:
-        print("  [WARN] README.md not found, skipping.")
-        return
-
+def _build_table(by_country: dict[str, list[str]], total: int) -> str:
     sorted_cc = sorted(by_country.items(), key=lambda x: -len(x[1]))
-    total = sum(len(v) for v in by_country.values())
-
     rows = [
         f"> **{total} configs** across **{len(by_country)} countries** — updated automatically every 15 minutes.",
         "",
@@ -185,19 +175,35 @@ def update_readme(by_country: dict[str, list[str]]) -> None:
         flag = country_to_flag(cc)
         url = f"{REPO_RAW}/sub-{cc}.txt"
         rows.append(f"| {flag} | {cc} | **{len(cfgs)}** | `{url}` |")
+    return "\n".join(rows)
 
-    block = "\n".join(rows)
 
-    new_readme = re.sub(
-        r"<!-- SUBS_START -->.*?<!-- SUBS_END -->",
-        f"<!-- SUBS_START -->\n{block}\n<!-- SUBS_END -->",
-        readme,
-        flags=re.DOTALL,
-    )
+def update_readme(by_country: dict[str, list[str]]) -> None:
+    base = os.path.dirname(os.path.abspath(__file__))
+    total = sum(len(v) for v in by_country.values())
+    block = _build_table(by_country, total)
 
-    with open(readme_path, "w", encoding="utf-8") as f:
-        f.write(new_readme)
-    print("  README.md updated.")
+    for filename, start_tag, end_tag in [
+        ("README.md",    "<!-- SUBS_START -->",    "<!-- SUBS_END -->"),
+        ("README.fa.md", "<!-- SUBS_START_FA -->", "<!-- SUBS_END_FA -->"),
+    ]:
+        path = os.path.join(base, filename)
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                content = f.read()
+        except FileNotFoundError:
+            print(f"  [WARN] {filename} not found, skipping.")
+            continue
+
+        updated = re.sub(
+            re.escape(start_tag) + r".*?" + re.escape(end_tag),
+            f"{start_tag}\n{block}\n{end_tag}",
+            content,
+            flags=re.DOTALL,
+        )
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(updated)
+        print(f"  {filename} updated.")
 
 
 # ── main ──────────────────────────────────────────────────────────────────────

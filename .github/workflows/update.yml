@@ -23,19 +23,23 @@ jobs:
           python-version: "3.10"
 
       - name: Install Dependencies
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Install xray-knife
         run: |
-          LATEST=$(curl -s https://api.github.com/repos/lilendian0x00/xray-knife/releases/latest | grep browser_download_url | grep -i 'linux-64\.zip' | head -1 | cut -d '"' -f4)
-          wget "$LATEST" -O knife.zip
+          LATEST=$(curl -s https://api.github.com/repos/lilendian0x00/xray-knife/releases/latest \
+            | grep browser_download_url | grep -i 'linux-64\.zip' | head -1 | cut -d '"' -f4)
+          wget "$LATEST" -O /tmp/knife.zip
           mkdir -p /tmp/knife
-          unzip -o knife.zip -d /tmp/knife
+          unzip -o /tmp/knife.zip -d /tmp/knife
           chmod +x /tmp/knife/xray-knife
           sudo mv /tmp/knife/xray-knife /usr/local/bin/
 
-      - name: Run Collector and Tester
+      - name: Restore README files
+        run: |
+          git checkout HEAD -- README.md README.fa.md
+
+      - name: Run Pipeline
         env:
           CHANNEL_URL: ${{ secrets.CHANNEL_URL }}
         run: python main.py
@@ -44,6 +48,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add split/ README.md
+          git add split/ README.md README.fa.md
           git commit -m "Auto-update subscription [skip ci]" || echo "No changes to commit"
           git push
