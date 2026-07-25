@@ -19,27 +19,20 @@
 ## 🔗 لینک‌های اشتراک
 
 <!-- SUBS_START_FA -->
-> **214 configs** across **17 countries** — updated automatically every 15 minutes.
+> **216 configs** across **2 countries** — updated every 15 minutes.
 
-| | Country | Configs | Subscription Link |
+### � All Configs
+
+| | | Link |
+| :---: | :---: | :--- |
+| 🌍 | **216** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-ALL.txt` |
+
+### 🗺️ By Country
+
+| 🏳️ | Country | Configs | Link |
 | :---: | :--- | :---: | :--- |
-| 🇽🇽 | XX | **100** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-XX.txt` |
-| 🇹🇷 | TR | **55** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-TR.txt` |
-| 🇳🇱 | NL | **12** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-NL.txt` |
-| 🇸🇪 | SE | **11** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-SE.txt` |
-| 🇩🇪 | DE | **8** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-DE.txt` |
-| 🇹🇼 | TW | **5** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-TW.txt` |
-| 🇷🇺 | RU | **4** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-RU.txt` |
-| 🇫🇷 | FR | **3** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-FR.txt` |
-| 🇵🇱 | PL | **3** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-PL.txt` |
-| 🇮🇹 | IT | **3** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-IT.txt` |
-| 🇱🇻 | LV | **2** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-LV.txt` |
-| 🇴🇲 | OM | **2** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-OM.txt` |
-| 🇺🇸 | US | **2** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-US.txt` |
-| 🇰🇷 | KR | **1** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-KR.txt` |
-| 🇪🇸 | ES | **1** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-ES.txt` |
-| 🇧🇬 | BG | **1** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-BG.txt` |
-| 🇮🇪 | IE | **1** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-IE.txt` |
+| 🌐 | Unknown | **214** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-XX.txt` |
+| 🇫🇷 | FR | **2** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-FR.txt` |
 <!-- SUBS_END_FA -->
 
 ---
