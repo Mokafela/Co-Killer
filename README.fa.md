@@ -19,33 +19,32 @@
 ## 🔗 لینک‌های اشتراک
 
 <!-- SUBS_START_FA -->
-> **178 configs** across **15 countries** — updated every 15 minutes.
+> **175 configs** across **14 countries** — updated every 15 minutes.
 
 ### � All Configs
 
 | | | Link |
 | :---: | :---: | :--- |
-| 🌍 | **178** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-ALL.txt` |
+| 🌍 | **175** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-ALL.txt` |
 
 ### 🗺️ By Country
 
 | 🏳️ | Country | Configs | Link |
 | :---: | :--- | :---: | :--- |
-| 🌐 | Unknown | **78** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-XX.txt` |
-| <img src="https://flagcdn.com/20x15/tr.png" alt="TR"> | TR | **49** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-TR.txt` |
-| <img src="https://flagcdn.com/20x15/nl.png" alt="NL"> | NL | **18** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-NL.txt` |
+| 🌐 | Unknown | **97** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-XX.txt` |
+| <img src="https://flagcdn.com/20x15/tr.png" alt="TR"> | TR | **31** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-TR.txt` |
+| <img src="https://flagcdn.com/20x15/nl.png" alt="NL"> | NL | **16** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-NL.txt` |
 | <img src="https://flagcdn.com/20x15/se.png" alt="SE"> | SE | **10** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-SE.txt` |
-| <img src="https://flagcdn.com/20x15/de.png" alt="DE"> | DE | **7** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-DE.txt` |
+| <img src="https://flagcdn.com/20x15/de.png" alt="DE"> | DE | **6** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-DE.txt` |
 | <img src="https://flagcdn.com/20x15/al.png" alt="AL"> | AL | **3** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-AL.txt` |
 | <img src="https://flagcdn.com/20x15/tw.png" alt="TW"> | TW | **3** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-TW.txt` |
-| <img src="https://flagcdn.com/20x15/pl.png" alt="PL"> | PL | **2** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-PL.txt` |
 | <img src="https://flagcdn.com/20x15/om.png" alt="OM"> | OM | **2** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-OM.txt` |
+| <img src="https://flagcdn.com/20x15/pl.png" alt="PL"> | PL | **2** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-PL.txt` |
 | <img src="https://flagcdn.com/20x15/fr.png" alt="FR"> | FR | **1** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-FR.txt` |
 | <img src="https://flagcdn.com/20x15/es.png" alt="ES"> | ES | **1** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-ES.txt` |
 | <img src="https://flagcdn.com/20x15/it.png" alt="IT"> | IT | **1** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-IT.txt` |
 | <img src="https://flagcdn.com/20x15/us.png" alt="US"> | US | **1** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-US.txt` |
 | <img src="https://flagcdn.com/20x15/lt.png" alt="LT"> | LT | **1** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-LT.txt` |
-| <img src="https://flagcdn.com/20x15/at.png" alt="AT"> | AT | **1** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-AT.txt` |
 <!-- SUBS_END_FA -->
 
 ---
