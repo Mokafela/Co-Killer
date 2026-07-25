@@ -176,20 +176,17 @@ def update_readme(by_country: dict[str, list[str]]) -> None:
     total = sum(len(v) for v in by_country.values())
 
     rows = [
-        "| Country | Count | Link |",
-        "| :--- | :---: | :--- |",
+        f"> **{total} configs** across **{len(by_country)} countries** — updated automatically every 15 minutes.",
+        "",
+        "| | Country | Configs | Subscription Link |",
+        "| :---: | :--- | :---: | :--- |",
     ]
     for cc, cfgs in sorted_cc:
         flag = country_to_flag(cc)
         url = f"{REPO_RAW}/sub-{cc}.txt"
-        rows.append(f"| {flag} {cc} | {len(cfgs)} | `{url}` |")
+        rows.append(f"| {flag} | {cc} | **{len(cfgs)}** | `{url}` |")
 
-    block = "\n".join([
-        f"**{total} configs** split across {len(by_country)} countries. "
-        "Updated automatically every 15 minutes.",
-        "",
-        *rows,
-    ])
+    block = "\n".join(rows)
 
     new_readme = re.sub(
         r"<!-- SUBS_START -->.*?<!-- SUBS_END -->",

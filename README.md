@@ -1,34 +1,86 @@
 <div align="center">
-  <h1>Config Killer</h1>
-  <p>Automated tool to collect, verify, and split free V2Ray / VLESS / VMess / Trojan / Shadowsocks configs by their real exit country.</p>
+
+<img src="https://img.shields.io/badge/Auto%20Updated-every%2015%20min-blue?style=for-the-badge&logo=github-actions&logoColor=white" />
+<img src="https://img.shields.io/badge/Free-No%20Login%20Required-brightgreen?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Protocols-VMess%20%7C%20VLESS%20%7C%20Trojan%20%7C%20SS-orange?style=for-the-badge" />
+
+<h1>⚡ Config Killer</h1>
+<p>Free, auto-updated proxy configs — sorted by real exit country.</p>
+
 </div>
 
-## How it works
+---
 
-1. **Fetch** — pulls configs from subscription URLs (set via `CHANNEL_URL` secret).
-2. **TCP check** — fast pre-filter that drops dead hosts.
-3. **Exit-IP probe** — routes a request through each alive config using [xray-knife](https://github.com/lilendian0x00/xray-knife) and reads the real exit IP from Cloudflare's `/cdn-cgi/trace`.
-4. **Country split** — looks up each exit IP on ip-api.com and writes a per-country subscription file to `split/`.
+## 🌍 Subscription Links
 
-The pipeline runs automatically every 15 minutes via GitHub Actions and on every push.
-
-## 🔗 Subscription Links
-
-Import any link below directly into v2rayNG, Shadowrocket, NekoBox, or any V2Ray-compatible client.
+Pick any country below and copy its link into your app.
 
 <!-- SUBS_START -->
 _Subscriptions will appear here after the first pipeline run._
 <!-- SUBS_END -->
 
-## 📱 Supported Clients
+---
 
-- **v2rayNG** (Android)
-- **V2RayN** (Windows)
-- **Shadowrocket** (iOS)
-- **NekoBox / NekoRay** (PC / Android)
-- **NapsternetV** (iOS / Android)
-- **Sing-Box**
+## 📲 How to Use
 
-## ⚠️ Disclaimer
+### 1 — Pick an app
 
-For educational purposes and open internet access only. Use responsibly.
+| Platform | App | Download |
+| :--- | :--- | :--- |
+| Android | **v2rayNG** | [Google Play](https://play.google.com/store/apps/details?id=com.v2ray.ang) |
+| Android / PC | **NekoBox** | [GitHub](https://github.com/MatsuriDayo/NekoBoxForAndroid/releases) |
+| iOS | **Shadowrocket** | App Store |
+| Windows | **V2RayN** | [GitHub](https://github.com/2dust/v2rayN/releases) |
+| Windows / Linux / Mac | **NekoRay** | [GitHub](https://github.com/MatsuriDayo/nekoray/releases) |
+| iOS / Android | **NapsternetV** | App Store / Play Store |
+
+### 2 — Add the subscription
+
+<details>
+<summary><b>v2rayNG</b> (Android)</summary>
+
+1. Open v2rayNG
+2. Tap **☰ → Subscription group settings**
+3. Tap **+** in the top-right corner
+4. Paste the link into the **URL** field → **✓**
+5. Back on the main screen tap **☰ → Update subscriptions**
+6. Select a config and tap the ▶ button
+
+</details>
+
+<details>
+<summary><b>V2RayN</b> (Windows)</summary>
+
+1. Open V2RayN
+2. Click **Subscriptions → Subscription group settings**
+3. Click **Add**, paste the link → **Confirm**
+4. Click **Subscriptions → Update subscriptions**
+5. Select a server from the list and press **Enter**
+
+</details>
+
+<details>
+<summary><b>NekoBox / NekoRay</b></summary>
+
+1. Open the app
+2. Go to **Profiles → New profile → URL**
+3. Paste the link → **OK**
+4. Click **Update** and select a profile to connect
+
+</details>
+
+<details>
+<summary><b>Shadowrocket</b> (iOS)</summary>
+
+1. Open Shadowrocket
+2. Tap **+** in the top-right corner
+3. Set type to **Subscribe**, paste the link → **Done**
+4. Tap the subscription to expand configs and connect
+
+</details>
+
+---
+
+<div align="center">
+<sub>Configs are verified and split by real exit country — not server location.</sub>
+</div>
