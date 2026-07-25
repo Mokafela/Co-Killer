@@ -137,6 +137,13 @@ def country_to_flag(cc: str) -> str:
     return chr(ord(cc[0].upper()) + 127397) + chr(ord(cc[1].upper()) + 127397)
 
 
+def country_flag_img(cc: str) -> str:
+    """Small flag image from flagcdn.com for GitHub markdown tables."""
+    if not cc or len(cc) != 2 or cc == UNKNOWN_CC:
+        return ""
+    return f'<img src="https://flagcdn.com/20x15/{cc.lower()}.png" alt="{cc}">'
+
+
 def cc_display(cc: str) -> str:
     """Human-readable country label."""
     return UNKNOWN_NAME if cc == UNKNOWN_CC else cc
@@ -202,7 +209,7 @@ def _build_table(by_country: dict[str, list[str]], total: int) -> str:
         "| :---: | :--- | :---: | :--- |",
     ]
     for cc, cfgs in sorted_cc:
-        flag = country_to_flag(cc)
+        flag = country_flag_img(cc) if cc != UNKNOWN_CC else "🌐"
         name = cc_display(cc)
         url = f"{REPO_RAW}/sub-{cc}.txt"
         lines.append(f"| {flag} | {name} | **{len(cfgs)}** | `{url}` |")
