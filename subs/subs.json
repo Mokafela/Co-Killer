@@ -2,19 +2,19 @@
   {
     "name": "All Configs",
     "flag": "🌍",
-    "count": 156,
+    "count": 153,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub.txt"
   },
   {
     "name": "403 Passed Configs",
     "flag": "✅",
-    "count": 156,
+    "count": 153,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-403.txt"
   },
   {
     "name": "PH Configs",
     "flag": "🇵🇭",
-    "count": 81,
+    "count": 80,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-PH.txt"
   },
   {
@@ -26,7 +26,7 @@
   {
     "name": "US Configs",
     "flag": "🇺🇸",
-    "count": 13,
+    "count": 14,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-US.txt"
   },
   {
@@ -54,22 +54,16 @@
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-HU.txt"
   },
   {
-    "name": "CA Configs",
-    "flag": "🇨🇦",
-    "count": 3,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-CA.txt"
-  },
-  {
     "name": "KZ Configs",
     "flag": "🇰🇿",
     "count": 2,
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-KZ.txt"
   },
   {
-    "name": "TW Configs",
-    "flag": "🇹🇼",
+    "name": "HK Configs",
+    "flag": "🇭🇰",
     "count": 2,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-TW.txt"
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-HK.txt"
   },
   {
     "name": "GB Configs",
@@ -78,16 +72,10 @@
     "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-GB.txt"
   },
   {
-    "name": "HK Configs",
-    "flag": "🇭🇰",
-    "count": 1,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-HK.txt"
-  },
-  {
-    "name": "RU Configs",
-    "flag": "🇷🇺",
-    "count": 1,
-    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-RU.txt"
+    "name": "TW Configs",
+    "flag": "🇹🇼",
+    "count": 2,
+    "url": "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs/sub-TW.txt"
   },
   {
     "name": "KR Configs",
