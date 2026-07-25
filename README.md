@@ -16,9 +16,7 @@
 
 ---
 
-## 🌍 Subscription Links
-
-Pick any country below and copy its link into your app.
+## 🔗 Subscription Links
 
 <!-- SUBS_START -->
 _Subscriptions will appear here after the first pipeline run._
@@ -30,42 +28,42 @@ _Subscriptions will appear here after the first pipeline run._
 
 ### 1 — Pick an app
 
-| Platform | App | Download |
-| :--- | :--- | :--- |
-| Android | **v2rayNG** | [Google Play](https://play.google.com/store/apps/details?id=com.v2ray.ang) |
-| Android / PC | **NekoBox** | [GitHub](https://github.com/MatsuriDayo/NekoBoxForAndroid/releases) |
-| iOS | **Shadowrocket** | App Store |
-| Windows | **V2RayN** | [GitHub](https://github.com/2dust/v2rayN/releases) |
-| Windows / Linux / Mac | **NekoRay** | [GitHub](https://github.com/MatsuriDayo/nekoray/releases) |
-| iOS / Android | **NapsternetV** | App Store / Play Store |
+| 📱 | App | Platform | Download |
+| :---: | :--- | :--- | :--- |
+| 🤖 | **v2rayNG** | Android | [Google Play](https://play.google.com/store/apps/details?id=com.v2ray.ang) |
+| 📦 | **NekoBox** | Android / PC | [GitHub](https://github.com/MatsuriDayo/NekoBoxForAndroid/releases) |
+| 🍎 | **Shadowrocket** | iOS | App Store |
+| 🪟 | **V2RayN** | Windows | [GitHub](https://github.com/2dust/v2rayN/releases) |
+| 💻 | **NekoRay** | Windows / Linux / Mac | [GitHub](https://github.com/MatsuriDayo/nekoray/releases) |
+| 📡 | **NapsternetV** | iOS / Android | App Store / Play Store |
 
 ### 2 — Add the subscription
 
 <details>
-<summary><b>v2rayNG</b> (Android)</summary>
+<summary>🤖 <b>v2rayNG</b> (Android)</summary>
 
 1. Open v2rayNG
 2. Tap **☰ → Subscription group settings**
 3. Tap **+** in the top-right corner
 4. Paste the link into the **URL** field → **✓**
 5. Back on the main screen tap **☰ → Update subscriptions**
-6. Select a config and tap the ▶ button
+6. Select a config and tap ▶
 
 </details>
 
 <details>
-<summary><b>V2RayN</b> (Windows)</summary>
+<summary>🪟 <b>V2RayN</b> (Windows)</summary>
 
 1. Open V2RayN
 2. Click **Subscriptions → Subscription group settings**
 3. Click **Add**, paste the link → **Confirm**
 4. Click **Subscriptions → Update subscriptions**
-5. Select a server from the list and press **Enter**
+5. Select a server and press **Enter**
 
 </details>
 
 <details>
-<summary><b>NekoBox / NekoRay</b></summary>
+<summary>📦 <b>NekoBox / NekoRay</b></summary>
 
 1. Open the app
 2. Go to **Profiles → New profile → URL**
@@ -75,7 +73,7 @@ _Subscriptions will appear here after the first pipeline run._
 </details>
 
 <details>
-<summary><b>Shadowrocket</b> (iOS)</summary>
+<summary>🍎 <b>Shadowrocket</b> (iOS)</summary>
 
 1. Open Shadowrocket
 2. Tap **+** in the top-right corner
@@ -87,5 +85,5 @@ _Subscriptions will appear here after the first pipeline run._
 ---
 
 <div align="center">
-<sub>Configs are verified and split by real exit country — not server location.</sub>
+<sub>✅ Configs are verified and split by real exit country — not server location.</sub>
 </div>

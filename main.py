@@ -126,10 +126,20 @@ def get_exit_ip(config: str) -> str | None:
 
 # ── step 3: country lookup via ip-api.com ────────────────────────────────────
 
+UNKNOWN_CC   = "XX"
+UNKNOWN_FLAG = "🌐"
+UNKNOWN_NAME = "Unknown"
+
+
 def country_to_flag(cc: str) -> str:
-    if not cc or len(cc) != 2:
-        return "🏳️"
+    if not cc or len(cc) != 2 or cc == UNKNOWN_CC:
+        return UNKNOWN_FLAG
     return chr(ord(cc[0].upper()) + 127397) + chr(ord(cc[1].upper()) + 127397)
+
+
+def cc_display(cc: str) -> str:
+    """Human-readable country label."""
+    return UNKNOWN_NAME if cc == UNKNOWN_CC else cc
 
 
 def lookup_countries_by_ip(ip_list: list[str]) -> dict[str, str]:
@@ -155,6 +165,8 @@ REPO_RAW = "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split"
 
 def write_split(by_country: dict[str, list[str]]) -> None:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    # Per-country files
     for cc, cfgs in by_country.items():
         b64 = base64.b64encode("\n".join(cfgs).encode()).decode()
         path = os.path.join(OUTPUT_DIR, f"sub-{cc}.txt")
@@ -162,20 +174,40 @@ def write_split(by_country: dict[str, list[str]]) -> None:
             f.write(b64)
         print(f"  Wrote {len(cfgs):>4} configs → {path}")
 
+    # Combined ALL file
+    all_cfgs = [cfg for cfgs in by_country.values() for cfg in cfgs]
+    b64_all = base64.b64encode("\n".join(all_cfgs).encode()).decode()
+    all_path = os.path.join(OUTPUT_DIR, "sub-ALL.txt")
+    with open(all_path, "w", encoding="utf-8") as f:
+        f.write(b64_all)
+    print(f"  Wrote {len(all_cfgs):>4} configs → {all_path}")
+
 
 def _build_table(by_country: dict[str, list[str]], total: int) -> str:
     sorted_cc = sorted(by_country.items(), key=lambda x: -len(x[1]))
-    rows = [
-        f"> **{total} configs** across **{len(by_country)} countries** — updated automatically every 15 minutes.",
+    all_url = f"{REPO_RAW}/sub-ALL.txt"
+
+    lines = [
+        f"> **{total} configs** across **{len(by_country)} countries** — updated every 15 minutes.",
         "",
-        "| | Country | Configs | Subscription Link |",
+        "### � All Configs",
+        "",
+        "| | | Link |",
+        "| :---: | :---: | :--- |",
+        f"| 🌍 | **{total}** | `{all_url}` |",
+        "",
+        "### 🗺️ By Country",
+        "",
+        "| 🏳️ | Country | Configs | Link |",
         "| :---: | :--- | :---: | :--- |",
     ]
     for cc, cfgs in sorted_cc:
         flag = country_to_flag(cc)
+        name = cc_display(cc)
         url = f"{REPO_RAW}/sub-{cc}.txt"
-        rows.append(f"| {flag} | {cc} | **{len(cfgs)}** | `{url}` |")
-    return "\n".join(rows)
+        lines.append(f"| {flag} | {name} | **{len(cfgs)}** | `{url}` |")
+
+    return "\n".join(lines)
 
 
 def update_readme(by_country: dict[str, list[str]]) -> None:
@@ -263,7 +295,7 @@ def main() -> None:
             if done % 50 == 0 or done == total:
                 print(f"  {done}/{total} probed — {found} exit IPs obtained")
 
-    print(f"  → {found} exit IPs, {total - found} failed (will be marked XX)")
+    print(f"  → {found} exit IPs, {total - found} failed (will be marked Unknown)")
 
     # ── 4. country lookup for exit IPs ───────────────────────────────────────
     print(f"\n[3/3] Country lookup via ip-api.com…")

@@ -16,9 +16,7 @@
 
 ---
 
-## 🌍 لینک‌های اشتراک
-
-یک کشور انتخاب کنید و لینک آن را در اپ خود وارد کنید.
+## 🔗 لینک‌های اشتراک
 
 <!-- SUBS_START_FA -->
 _لینک‌ها پس از اولین اجرای pipeline نمایش داده می‌شوند._
@@ -30,31 +28,31 @@ _لینک‌ها پس از اولین اجرای pipeline نمایش داده م
 
 ### ۱ — یک اپ انتخاب کنید
 
-| سیستم‌عامل | اپ | دانلود |
-| :--- | :--- | :--- |
-| اندروید | **v2rayNG** | [Google Play](https://play.google.com/store/apps/details?id=com.v2ray.ang) |
-| اندروید / کامپیوتر | **NekoBox** | [GitHub](https://github.com/MatsuriDayo/NekoBoxForAndroid/releases) |
-| iOS | **Shadowrocket** | App Store |
-| ویندوز | **V2RayN** | [GitHub](https://github.com/2dust/v2rayN/releases) |
-| ویندوز / لینوکس / مک | **NekoRay** | [GitHub](https://github.com/MatsuriDayo/nekoray/releases) |
-| iOS / اندروید | **NapsternetV** | App Store / Play Store |
+| 📱 | اپ | سیستم‌عامل | دانلود |
+| :---: | :--- | :--- | :--- |
+| 🤖 | **v2rayNG** | اندروید | [Google Play](https://play.google.com/store/apps/details?id=com.v2ray.ang) |
+| 📦 | **NekoBox** | اندروید / کامپیوتر | [GitHub](https://github.com/MatsuriDayo/NekoBoxForAndroid/releases) |
+| 🍎 | **Shadowrocket** | iOS | App Store |
+| 🪟 | **V2RayN** | ویندوز | [GitHub](https://github.com/2dust/v2rayN/releases) |
+| 💻 | **NekoRay** | ویندوز / لینوکس / مک | [GitHub](https://github.com/MatsuriDayo/nekoray/releases) |
+| 📡 | **NapsternetV** | iOS / اندروید | App Store / Play Store |
 
 ### ۲ — اشتراک را اضافه کنید
 
 <details>
-<summary><b>v2rayNG</b> (اندروید)</summary>
+<summary>🤖 <b>v2rayNG</b> (اندروید)</summary>
 
 1. اپ v2rayNG را باز کنید
 2. روی **☰ → تنظیمات گروه اشتراک** بزنید
 3. روی **+** در گوشه بالا راست بزنید
 4. لینک را در فیلد **URL** بچسبانید ← **✓**
 5. به صفحه اصلی برگردید و روی **☰ → بروزرسانی اشتراک‌ها** بزنید
-6. یک کانفیگ انتخاب کنید و دکمه ▶ را بزنید
+6. یک کانفیگ انتخاب کنید و ▶ را بزنید
 
 </details>
 
 <details>
-<summary><b>V2RayN</b> (ویندوز)</summary>
+<summary>🪟 <b>V2RayN</b> (ویندوز)</summary>
 
 1. اپ V2RayN را باز کنید
 2. روی **Subscriptions → تنظیمات گروه اشتراک** کلیک کنید
@@ -65,7 +63,7 @@ _لینک‌ها پس از اولین اجرای pipeline نمایش داده م
 </details>
 
 <details>
-<summary><b>NekoBox / NekoRay</b></summary>
+<summary>📦 <b>NekoBox / NekoRay</b></summary>
 
 1. اپ را باز کنید
 2. به **Profiles → پروفایل جدید → URL** بروید
@@ -75,7 +73,7 @@ _لینک‌ها پس از اولین اجرای pipeline نمایش داده م
 </details>
 
 <details>
-<summary><b>Shadowrocket</b> (iOS)</summary>
+<summary>🍎 <b>Shadowrocket</b> (iOS)</summary>
 
 1. اپ Shadowrocket را باز کنید
 2. روی **+** در گوشه بالا راست بزنید
@@ -87,5 +85,5 @@ _لینک‌ها پس از اولین اجرای pipeline نمایش داده م
 ---
 
 <div align="center">
-<sub>کانفیگ‌ها بر اساس کشور خروجی واقعی دسته‌بندی می‌شوند — نه موقعیت سرور.</sub>
+<sub>✅ کانفیگ‌ها بر اساس کشور خروجی واقعی دسته‌بندی می‌شوند — نه موقعیت سرور.</sub>
 </div>
