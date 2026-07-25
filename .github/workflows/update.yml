@@ -30,9 +30,10 @@ jobs:
         run: |
           LATEST=$(curl -s https://api.github.com/repos/lilendian0x00/xray-knife/releases/latest | grep browser_download_url | grep -i 'linux-64\.zip' | head -1 | cut -d '"' -f4)
           wget "$LATEST" -O knife.zip
-          unzip -o knife.zip
-          chmod +x xray-knife
-          sudo mv xray-knife /usr/local/bin/
+          mkdir -p /tmp/knife
+          unzip -o knife.zip -d /tmp/knife
+          chmod +x /tmp/knife/xray-knife
+          sudo mv /tmp/knife/xray-knife /usr/local/bin/
 
       - name: Run Collector and Tester
         env:
