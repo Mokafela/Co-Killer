@@ -28,8 +28,9 @@ jobs:
 
       - name: Install xray-knife
         run: |
-          wget https://github.com/lilendian0x00/xray-knife/releases/latest/download/Xray-knife-linux-64.zip -O knife.zip
-          unzip -o knife.zip xray-knife
+          LATEST=$(curl -s https://api.github.com/repos/lilendian0x00/xray-knife/releases/latest | grep browser_download_url | grep -i 'linux-64\.zip' | head -1 | cut -d '"' -f4)
+          wget "$LATEST" -O knife.zip
+          unzip -o knife.zip
           chmod +x xray-knife
           sudo mv xray-knife /usr/local/bin/
 
@@ -42,6 +43,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add subs/ README.md index.html
+          git add split/
           git commit -m "Auto-update subscription [skip ci]" || echo "No changes to commit"
           git push
