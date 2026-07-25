@@ -96,8 +96,5 @@ The generated `sub.txt` works perfectly with:
 - **NapsternetV** (iOS/Android)
 - **Sing-Box**
 
-## 🔑 Keywords for Search Engines
-`v2ray iran` `vless iran` `vmess iran` `free v2ray` `bypass filtering iran` `iran internet censorship` `shadowsocks iran` `trojan iran` `xray proxy` `v2rayng configs` `shadowrocket configs iran` `telegram v2ray proxy`
-
 ## ⚠️ Disclaimer
 This tool is for educational purposes and open internet access. Please use it responsibly.

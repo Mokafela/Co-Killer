@@ -1,362 +1,195 @@
-import requests
-from bs4 import BeautifulSoup
 import base64
 import json
-import urllib.parse
-import socket
-import re
 import os
-import subprocess
-from concurrent.futures import ThreadPoolExecutor
+import re
+import socket
+import urllib.parse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-CHANNEL_URL = os.getenv("CHANNEL_URL", "")
-TIMEOUT = 3  # seconds for TCP ping
-MAX_WORKERS = 20
+import requests
 
-def get_channel_html(url):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    }
+# ── config ────────────────────────────────────────────────────────────────────
+CHANNEL_URL  = os.getenv("CHANNEL_URL", "")   # comma-separated subscription URLs
+TIMEOUT      = 3    # TCP connect timeout (seconds)
+MAX_WORKERS  = 50   # parallel TCP checkers
+IP_API_BATCH = 100  # ip-api.com max batch size
+OUTPUT_DIR   = "split"
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+# ── helpers ───────────────────────────────────────────────────────────────────
+
+def decode_subscription(raw: str) -> list[str]:
+    """Return individual config lines from a raw subscription body."""
+    raw = raw.strip()
+    # Try base64 first
     try:
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
-        return response.text
-    except Exception as e:
-        print(f"Error fetching channel: {e}")
-        return None
-
-def extract_configs(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    configs = []
-    
-    text = soup.get_text()
-    search_text = text
-    
-    # Attempt Base64 decode for sub links
-    try:
-        clean_text = text.strip()
-        clean_text += "=" * ((4 - len(clean_text) % 4) % 4)
-        decoded = base64.b64decode(clean_text).decode('utf-8')
-        if 'vmess://' in decoded or 'vless://' in decoded:
-            search_text += "\n" + decoded
+        padded = raw + "=" * ((4 - len(raw) % 4) % 4)
+        decoded = base64.b64decode(padded).decode("utf-8")
+        lines = [l.strip() for l in decoded.splitlines() if l.strip()]
+        if any(l.startswith(("vmess://", "vless://", "trojan://", "ss://")) for l in lines):
+            return lines
     except Exception:
         pass
-    
-    # Regex to match vmess, vless, trojan, ss URLs
-    pattern = re.compile(r'(vmess://[a-zA-Z0-9+/=]+)|((?:vless|trojan|ss)://[^\s<"\'>]+)')
-    matches = pattern.findall(search_text)
-    
-    for match in matches:
-        if match[0]:
-            configs.append(match[0])
-        elif match[1]:
-            configs.append(match[1])
-            
-    # Remove duplicates
-    return list(set(configs))
+    # Plain text
+    return [l.strip() for l in raw.splitlines() if l.strip()]
 
-def parse_config(config):
-    """Parses a config and returns (host, port) if possible, else None."""
+
+def fetch_subscription(url: str) -> list[str]:
+    headers = {"User-Agent": "Mozilla/5.0"}
     try:
-        if config.startswith('vmess://'):
-            b64_data = config[8:]
-            # pad if needed
-            b64_data += "=" * ((4 - len(b64_data) % 4) % 4)
-            json_data = base64.b64decode(b64_data).decode('utf-8')
-            data = json.loads(json_data)
-            return data.get('add'), int(data.get('port', 0))
-        
-        elif config.startswith(('vless://', 'trojan://', 'ss://')):
-            # Format: protocol://uuid@host:port?query#name
-            parsed = urllib.parse.urlparse(config)
-            return parsed.hostname, parsed.port
+        r = requests.get(url, headers=headers, timeout=15)
+        r.raise_for_status()
+        return decode_subscription(r.text)
     except Exception as e:
-        # Silently fail on invalid parse
+        print(f"  [WARN] Could not fetch {url}: {e}")
+        return []
+
+
+def parse_host_port(config: str):
+    """Return (host, port) tuple or None."""
+    try:
+        if config.startswith("vmess://"):
+            b64 = config[8:]
+            b64 += "=" * ((4 - len(b64) % 4) % 4)
+            data = json.loads(base64.b64decode(b64).decode("utf-8"))
+            return str(data.get("add", "")), int(data.get("port", 0))
+        elif config.startswith(("vless://", "trojan://", "ss://")):
+            p = urllib.parse.urlparse(config)
+            return p.hostname, p.port
+    except Exception:
         pass
     return None
 
-def rename_config(config, name):
-    """Renames a config's alias/remark to the given name."""
-    try:
-        if config.startswith('vmess://'):
-            b64_data = config[8:]
-            b64_data += "=" * ((4 - len(b64_data) % 4) % 4)
-            json_data = base64.b64decode(b64_data).decode('utf-8')
-            data = json.loads(json_data)
-            data['ps'] = name
-            new_json_data = json.dumps(data)
-            new_b64 = base64.b64encode(new_json_data.encode('utf-8')).decode('utf-8')
-            return f"vmess://{new_b64}"
-            
-        elif config.startswith(('vless://', 'trojan://', 'ss://')):
-            parsed = urllib.parse.urlparse(config)
-            new_parsed = parsed._replace(fragment=urllib.parse.quote(name))
-            return urllib.parse.urlunparse(new_parsed)
-    except Exception:
-        pass
-    return config
 
-def test_config(config):
-    parsed = parse_config(config)
+def tcp_alive(config: str) -> bool:
+    """Return True if the config's host:port accepts a TCP connection."""
+    parsed = parse_host_port(config)
     if not parsed:
-        return config, False, 0.0
-        
+        return False
     host, port = parsed
     if not host or not port:
-        return config, False, 0.0
-        
-    tcp_pass = False
+        return False
     try:
-        # Basic TCP Ping
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(TIMEOUT)
-        result = sock.connect_ex((host, port))
-        sock.close()
-        if result == 0:
-            tcp_pass = True
+        with socket.create_connection((host, port), timeout=TIMEOUT):
+            return True
     except Exception:
-        pass
-    
-    if not tcp_pass:
-        return config, False, 0.0
+        return False
 
-    # Google 403 test using xray-knife
-    try:
-        proc = subprocess.run(
-            ["xray-knife", "http", "-c", config, "-u", "https://gemini.google.com/app", "-d", "10000", "--speedtest"],
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
-        out_lower = proc.stdout.lower() + proc.stderr.lower()
-        if ("delay" in out_lower or "valid" in out_lower or "✅" in out_lower or "speed" in out_lower) and "❌" not in out_lower and "failed" not in out_lower and "403" not in out_lower and "forbidden" not in out_lower and "region" not in out_lower:
-            speed_mbps = 0.0
-            match = re.search(r'speed:\s*([\d.]+)\s*(mbps|kbps|bps|mb/s|kb/s|b/s)', out_lower)
-            if match:
-                val = float(match.group(1))
-                unit = match.group(2)
-                if unit in ('mb/s', 'mbps'):
-                    speed_mbps = val
-                elif unit in ('kb/s', 'kbps'):
-                    speed_mbps = val / 1024.0
-                elif unit in ('b/s', 'bps'):
-                    speed_mbps = val / (1024.0 * 1024.0)
-            return config, True, speed_mbps
-    except Exception as e:
-        pass
 
-    return config, False, 0.0
+def country_to_flag(cc: str) -> str:
+    if not cc or len(cc) != 2:
+        return "🏳️"
+    return chr(ord(cc[0].upper()) + 127397) + chr(ord(cc[1].upper()) + 127397)
 
-def main():
-    channel_env = os.getenv("CHANNEL_URL", "")
-    if not channel_env:
-        print("CHANNEL_URL environment variable is missing.")
+
+def lookup_countries(configs: list[str]) -> dict[str, str]:
+    """
+    Returns {config: country_code} for every config whose host resolves.
+    Uses ip-api.com free batch endpoint (no key required, 45 req/min).
+    """
+    host_map: dict[str, str] = {}   # config → host
+    for cfg in configs:
+        parsed = parse_host_port(cfg)
+        if parsed and parsed[0]:
+            host_map[cfg] = parsed[0]
+
+    # Resolve hostnames to IPs for the API (it accepts hostnames too, but
+    # explicit IPs are faster and avoid double-resolution on their side).
+    queries = [{"query": host} for host in host_map.values()]
+    ip_to_cc: dict[str, str] = {}
+
+    for i in range(0, len(queries), IP_API_BATCH):
+        batch = queries[i : i + IP_API_BATCH]
+        try:
+            r = requests.post("http://ip-api.com/batch", json=batch, timeout=15)
+            for item in r.json():
+                if item.get("status") == "success":
+                    ip_to_cc[item["query"]] = item.get("countryCode", "XX")
+        except Exception as e:
+            print(f"  [WARN] ip-api.com batch error: {e}")
+
+    return {cfg: ip_to_cc.get(host, "XX") for cfg, host in host_map.items()}
+
+
+def write_split(by_country: dict[str, list[str]]) -> None:
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    for cc, cfgs in by_country.items():
+        content = "\n".join(cfgs)
+        b64 = base64.b64encode(content.encode("utf-8")).decode("utf-8")
+        path = os.path.join(OUTPUT_DIR, f"sub-{cc}.txt")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(b64)
+        print(f"  Wrote {len(cfgs):>4} configs → {path}")
+
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+def main() -> None:
+    # ── 1. collect configs ────────────────────────────────────────────────────
+    if not CHANNEL_URL:
+        print("CHANNEL_URL is not set. Export it as an env variable.")
         return
 
-    urls = [url.strip() for url in channel_env.split(",") if url.strip()]
-    all_configs = []
-    
+    urls = [u.strip() for u in CHANNEL_URL.split(",") if u.strip()]
+    all_configs: list[str] = []
     for url in urls:
-        print(f"Fetching configs from channel...")
-        html = get_channel_html(url)
-        if html:
-            extracted = extract_configs(html)
-            print(f"Extracted {len(extracted)} from this channel.")
-            all_configs.extend(extracted)
-            
-    # Remove duplicates across all channels
-    configs = list(set(all_configs))
-    total = len(configs)
-    print(f"Total unique configs extracted: {total}. Testing them now...")
-    
-    working_configs = []
-    passed_configs = set()
-    
-    # Initialize xray-knife DB in single thread to prevent race condition
-    try:
-        subprocess.run(["xray-knife", "http", "-c", "vless://00000000-0000-0000-0000-000000000000@1.1.1.1:8080?encryption=none&security=none&type=tcp#dummy"], capture_output=True, timeout=5)
-    except Exception:
-        pass
+        print(f"Fetching: {url}")
+        configs = fetch_subscription(url)
+        print(f"  → {len(configs)} configs extracted")
+        all_configs.extend(configs)
 
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        for i, res in enumerate(executor.map(test_config, configs), 1):
-            if i % 10 == 0 or i == total:
-                print(f"Progress: Tested {i}/{total} configs (Remaining: {total - i})...")
-            if res:
-                if len(res) == 3:
-                    cfg, http_pass, speed = res
-                else:
-                    cfg, http_pass = res
-                    speed = 0.0
-                if http_pass:
-                    working_configs.append((cfg, speed))
-                    passed_configs.add(cfg)
-                
-    print(f"Found {len(working_configs)} working configs ({len(passed_configs)} passed HTTP test).")
-    
-    # Sort by speed descending
-    working_configs.sort(key=lambda x: x[1], reverse=True)
-    
-    # Limit to 60 configs removed
-    
-    # Add dummy config for repo name
-    dummy_config = "vless://00000000-0000-0000-0000-000000000000@1.1.1.1:8080?encryption=none&security=none&type=tcp#" + urllib.parse.quote("Mokafela/Co-Killer")
-    renamed_configs = [dummy_config]
-    
-    # Get country flags via IP-API batch endpoint
-    def country_to_flag(code):
-        if not code or len(code) != 2: return "🏳️"
-        return chr(ord(code[0].upper()) + 127397) + chr(ord(code[1].upper()) + 127397)
-        
-    queries = []
-    host_to_cfg = {}
-    for cfg, speed in working_configs:
-        parsed = parse_config(cfg)
-        if parsed and parsed[0]:
-            queries.append({"query": parsed[0]})
-            host_to_cfg[cfg] = parsed[0]
-            
-    flag_map = {}
-    country_map = {}
-    if queries:
-        try:
-            for i in range(0, len(queries), 100):
-                batch = queries[i:i+100]
-                res = requests.post("http://ip-api.com/batch", json=batch, timeout=10)
-                for item in res.json():
-                    if item.get("status") == "success":
-                        cc = item.get("countryCode", "")
-                        if cc:
-                            flag_map[item["query"]] = country_to_flag(cc)
-                            country_map[item["query"]] = cc
-        except Exception as e:
-            print(f"Error fetching IP data: {e}")
+    # deduplicate while preserving order
+    seen: set[str] = set()
+    unique: list[str] = []
+    for c in all_configs:
+        if c not in seen:
+            seen.add(c)
+            unique.append(c)
 
-    configs_by_country = {}
-    all_renamed = [dummy_config]
-    passed_renamed = [dummy_config]
+    print(f"\nTotal unique configs: {len(unique)}")
 
-    for i, (cfg, speed) in enumerate(working_configs, 1):
-        host = host_to_cfg.get(cfg, "")
-        flag = flag_map.get(host, "🏳️")
-        cc = country_map.get(host, "Unknown")
-        speed_tag = f" {speed:.2f}MB/s" if speed > 0 else ""
-        pass_tag = " [PASS]" if cfg in passed_configs else ""
-        renamed = rename_config(cfg, f"{flag} Mokafela#{i}{speed_tag}{pass_tag}")
-        all_renamed.append(renamed)
-        
-        if cfg in passed_configs:
-            passed_renamed.append(renamed)
-        
-        if cc not in configs_by_country:
-            configs_by_country[cc] = [dummy_config]
-        configs_by_country[cc].append(renamed)
-    
-    os.makedirs("subs", exist_ok=True)
-    
-    if len(all_renamed) > 1: # More than just the dummy config
-        sub_content = "\n".join(all_renamed)
-        b64_sub = base64.b64encode(sub_content.encode('utf-8')).decode('utf-8')
-        
-        with open('subs/sub.txt', 'w', encoding='utf-8') as f:
-            f.write(b64_sub)
-        print("Subscription saved to subs/sub.txt")
+    # ── 2. TCP alive check ────────────────────────────────────────────────────
+    print(f"\nChecking TCP connectivity ({MAX_WORKERS} workers, timeout={TIMEOUT}s)…")
+    alive: list[str] = []
+    total = len(unique)
 
-        # Write 403-passed sub
-        passed_count = 0
-        if len(passed_renamed) > 1:
-            passed_count = len(passed_renamed) - 1
-            passed_content = "\n".join(passed_renamed)
-            b64_passed = base64.b64encode(passed_content.encode('utf-8')).decode('utf-8')
-            with open('subs/sub-403.txt', 'w', encoding='utf-8') as f:
-                f.write(b64_passed)
-            print("Subscription saved to subs/sub-403.txt")
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+        future_to_cfg = {ex.submit(tcp_alive, cfg): cfg for cfg in unique}
+        done = 0
+        for future in as_completed(future_to_cfg):
+            done += 1
+            cfg = future_to_cfg[future]
+            if future.result():
+                alive.append(cfg)
+            if done % 100 == 0 or done == total:
+                print(f"  {done}/{total} tested — {len(alive)} alive so far")
 
-        # Write country subs
-        country_counts = {}
-        for cc, cfgs in configs_by_country.items():
-            if len(cfgs) > 1:
-                cc_count = len(cfgs) - 1
-                country_counts[cc] = cc_count
-                cc_content = "\n".join(cfgs)
-                b64_cc = base64.b64encode(cc_content.encode('utf-8')).decode('utf-8')
-                with open(f'subs/sub-{cc}.txt', 'w', encoding='utf-8') as f:
-                    f.write(b64_cc)
-                print(f"Subscription saved to subs/sub-{cc}.txt")
+    print(f"\nAlive: {len(alive)} / {total}")
 
-        # Update README
-        base_url = "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/subs"
-        md = [
-            "Copy the link below and import it into your V2Ray client (like v2rayNG, Shadowrocket, or NekoBox).",
-            "",
-            "### 🌍 All Configs",
-            f"Contains **{len(all_renamed)-1}** configurations.",
-            "```text",
-            f"{base_url}/sub.txt",
-            "```",
-            "",
-            "### ✅ 403 Passed Configs",
-            f"Contains **{passed_count}** configurations.",
-            "```text",
-            f"{base_url}/sub-403.txt",
-            "```",
-            "",
-            "### 🏳️ Country Specific Configs",
-            "| Country | Count | Subscription Link |",
-            "| :--- | :---: | :--- |"
-        ]
-        
-        sorted_cc = sorted(country_counts.items(), key=lambda x: x[1], reverse=True)
-        for cc, count in sorted_cc:
-            flag = country_to_flag(cc) if cc != "Unknown" else "🏳️"
-            md.append(f"| {flag} {cc} | {count} | `{base_url}/sub-{cc}.txt` |")
-            
-        new_md_content = "\n".join(md)
-        
-        try:
-            with open('README.md', 'r', encoding='utf-8') as f:
-                readme = f.read()
-            readme = re.sub(r'<!-- SUBS_START -->.*?<!-- SUBS_END -->', 
-                            f'<!-- SUBS_START -->\n{new_md_content}\n<!-- SUBS_END -->', 
-                            readme, flags=re.DOTALL)
-            with open('README.md', 'w', encoding='utf-8') as f:
-                f.write(readme)
-            print("README.md updated.")
-        except Exception as e:
-            print(f"Error updating README.md: {e}")
+    if not alive:
+        print("No alive configs found. Exiting.")
+        return
 
-        # Write JSON for frontend
-        json_data = [
-            {
-                "name": "All Configs",
-                "flag": "🌍",
-                "count": len(all_renamed) - 1,
-                "url": f"{base_url}/sub.txt"
-            }
-        ]
-        if passed_count > 0:
-            json_data.append({
-                "name": "403 Passed Configs",
-                "flag": "✅",
-                "count": passed_count,
-                "url": f"{base_url}/sub-403.txt"
-            })
-            
-        for cc, count in sorted_cc:
-            flag = country_to_flag(cc) if cc != "Unknown" else "🏳️"
-            json_data.append({
-                "name": f"{cc} Configs",
-                "flag": flag,
-                "count": count,
-                "url": f"{base_url}/sub-{cc}.txt"
-            })
-            
-        with open('subs/subs.json', 'w', encoding='utf-8') as f:
-            json.dump(json_data, f, ensure_ascii=False, indent=2)
-        print("Generated subs/subs.json for GitHub Pages.")
+    # ── 3. country lookup ─────────────────────────────────────────────────────
+    print(f"\nLooking up countries via ip-api.com…")
+    cc_map = lookup_countries(alive)   # config → country_code
 
-    else:
-        print("No working configs found.")
+    # group by country
+    by_country: dict[str, list[str]] = {}
+    for cfg in alive:
+        cc = cc_map.get(cfg, "XX")
+        by_country.setdefault(cc, []).append(cfg)
+
+    print("Country breakdown:")
+    for cc, cfgs in sorted(by_country.items(), key=lambda x: -len(x[1])):
+        print(f"  {country_to_flag(cc)} {cc}: {len(cfgs)}")
+
+    # ── 4. write split/ files ─────────────────────────────────────────────────
+    print(f"\nWriting split files to ./{OUTPUT_DIR}/")
+    write_split(by_country)
+    print("\nDone.")
+
 
 if __name__ == "__main__":
     main()
