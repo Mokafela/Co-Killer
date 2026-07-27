@@ -13,8 +13,8 @@ import requests
 # ── config ────────────────────────────────────────────────────────────────────
 CHANNEL_URL   = os.getenv("CHANNEL_URL", "")  # comma-separated subscription URLs
 TCP_TIMEOUT   = 3    # seconds for the fast TCP pre-filter
-KNIFE_TIMEOUT = 15   # seconds xray-knife is allowed per config
-MAX_WORKERS   = 20   # parallel xray-knife workers (each spawns a process)
+KNIFE_TIMEOUT = 30   # seconds xray-knife is allowed per config (increased from 15)
+MAX_WORKERS   = 10   # parallel xray-knife workers (reduced since timeout is longer)
 IP_API_BATCH  = 100  # ip-api.com free batch limit
 OUTPUT_DIR    = "split"
 
@@ -90,43 +90,54 @@ def tcp_alive(config: str) -> bool:
 
 # ── step 2: exit-IP via xray-knife ───────────────────────────────────────────
 
-# Cloudflare's trace endpoint returns plain text like:
-#   ip=1.2.3.4
-#   ...
-_IP_RE = re.compile(r"\bip=(\d{1,3}(?:\.\d{1,3}){3})\b")
+# We try two endpoints:
+# 1. ipify.org - simple, just returns the IP as plain text
+# 2. Cloudflare trace - returns "ip=x.x.x.x" format
+_IP_RE = re.compile(r"\b(?:ip=)?(\d{1,3}(?:\.\d{1,3}){3})\b")
 
 
 def get_exit_ip(config: str) -> str | None:
     """
     Route a request through the config using xray-knife and return the
-    exit IP reported by Cloudflare's cdn-cgi/trace.  Returns None on failure.
+    exit IP. Tries ipify.org first (simple), then Cloudflare trace as fallback.
     """
-    try:
-        proc = subprocess.run(
-            [
-                KNIFE_BIN, "http",
-                "-c", config,
-                "-u", "https://cloudflare.com/cdn-cgi/trace",
-                "-d", str(KNIFE_TIMEOUT * 1000),  # xray-knife uses ms
-                "-b",   # show response body (contains ip=…)
-                "--rip",
-            ],
-            capture_output=True,
-            text=True,
-            timeout=KNIFE_TIMEOUT + 5,  # hard process timeout
-        )
-        combined = proc.stdout + proc.stderr
-        m = _IP_RE.search(combined)
-        if m:
-            return m.group(1)
-        # Debug: log first failure to see what's happening
-        if os.getenv("DEBUG"):
-            print(f"[DEBUG] xray-knife failed for config (exit={proc.returncode}):")
-            print(f"  stdout: {proc.stdout[:200]}")
-            print(f"  stderr: {proc.stderr[:200]}")
-    except Exception as e:
-        if os.getenv("DEBUG"):
-            print(f"[DEBUG] Exception in get_exit_ip: {e}")
+    # Try 1: ipify (returns just the IP, e.g. "1.2.3.4")
+    for url in ["https://api.ipify.org", "https://cloudflare.com/cdn-cgi/trace"]:
+        try:
+            proc = subprocess.run(
+                [
+                    KNIFE_BIN, "http",
+                    "-c", config,
+                    "-u", url,
+                    "-d", str(KNIFE_TIMEOUT * 1000),
+                    "-b",
+                    "--rip",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=KNIFE_TIMEOUT + 5,
+            )
+            combined = proc.stdout + proc.stderr
+            m = _IP_RE.search(combined)
+            if m:
+                return m.group(1)
+        except Exception:
+            continue
+    
+    # Debug first failure
+    if os.getenv("DEBUG"):
+        try:
+            proc = subprocess.run(
+                [KNIFE_BIN, "http", "-c", config, "-u", "https://api.ipify.org",
+                 "-d", str(KNIFE_TIMEOUT * 1000), "-b", "--rip"],
+                capture_output=True, text=True, timeout=KNIFE_TIMEOUT + 5,
+            )
+            print(f"[DEBUG] xray-knife failed (exit={proc.returncode}):")
+            print(f"  stdout: {proc.stdout[:300]}")
+            print(f"  stderr: {proc.stderr[:300]}")
+        except Exception as e:
+            print(f"[DEBUG] Exception: {e}")
+    
     return None
 
 
