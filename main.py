@@ -119,9 +119,33 @@ def get_exit_ip(config: str) -> str | None:
         m = _IP_RE.search(combined)
         if m:
             return m.group(1)
-    except Exception:
-        pass
+        # Debug: log first failure to see what's happening
+        if os.getenv("DEBUG"):
+            print(f"[DEBUG] xray-knife failed for config (exit={proc.returncode}):")
+            print(f"  stdout: {proc.stdout[:200]}")
+            print(f"  stderr: {proc.stderr[:200]}")
+    except Exception as e:
+        if os.getenv("DEBUG"):
+            print(f"[DEBUG] Exception in get_exit_ip: {e}")
     return None
+
+
+def get_server_ip(config: str) -> str | None:
+    """Fallback: resolve the server's host to an IP."""
+    parsed = parse_host_port(config)
+    if not parsed or not parsed[0]:
+        return None
+    host = parsed[0]
+    try:
+        # If already an IP, return it
+        socket.inet_aton(host)
+        return host
+    except socket.error:
+        # Resolve hostname
+        try:
+            return socket.gethostbyname(host)
+        except Exception:
+            return None
 
 
 # ── step 3: country lookup via ip-api.com ────────────────────────────────────
@@ -283,36 +307,45 @@ def main() -> None:
         print("No alive configs. Exiting.")
         return
 
-    # ── 3. get real exit IP via xray-knife ────────────────────────────────────
+    # ── 3. get real exit IP via xray-knife (with server IP fallback) ─────────
     print(f"\n[2/3] Exit-IP probe  ({MAX_WORKERS} workers, {KNIFE_TIMEOUT}s each)…")
-    # map: config → exit_ip (or None)
-    exit_ip_map: dict[str, str | None] = {}
+    ip_map: dict[str, str | None] = {}  # config → IP (exit or server)
     total = len(alive)
+    
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
         futures = {ex.submit(get_exit_ip, c): c for c in alive}
         done = 0
-        found = 0
+        exit_found = 0
         for fut in as_completed(futures):
             done += 1
             cfg = futures[fut]
             ip = fut.result()
-            exit_ip_map[cfg] = ip
+            ip_map[cfg] = ip
             if ip:
-                found += 1
+                exit_found += 1
             if done % 50 == 0 or done == total:
-                print(f"  {done}/{total} probed — {found} exit IPs obtained")
+                print(f"  {done}/{total} probed — {exit_found} exit IPs obtained")
 
-    print(f"  → {found} exit IPs, {total - found} failed (will be marked Unknown)")
+    print(f"  → {exit_found} exit IPs via xray-knife")
+    
+    # Fallback: for configs where xray-knife failed, use server IP
+    failed = [c for c, ip in ip_map.items() if not ip]
+    if failed:
+        print(f"  → Falling back to server IP for {len(failed)} configs...")
+        for cfg in failed:
+            ip_map[cfg] = get_server_ip(cfg)
+        server_found = sum(1 for ip in ip_map.values() if ip)
+        print(f"  → {server_found - exit_found} server IPs resolved")
 
-    # ── 4. country lookup for exit IPs ───────────────────────────────────────
+    # ── 4. country lookup for all IPs ────────────────────────────────────────
     print(f"\n[3/3] Country lookup via ip-api.com…")
-    all_ips = [ip for ip in exit_ip_map.values() if ip]
+    all_ips = [ip for ip in ip_map.values() if ip]
     ip_to_cc = lookup_countries_by_ip(all_ips)
 
     by_country: dict[str, list[str]] = {}
     for cfg in alive:
-        ip = exit_ip_map.get(cfg)
-        cc = ip_to_cc.get(ip, "XX") if ip else "XX"
+        ip = ip_map.get(cfg)
+        cc = ip_to_cc.get(ip, UNKNOWN_CC) if ip else UNKNOWN_CC
         by_country.setdefault(cc, []).append(cfg)
 
     print("Country breakdown:")
