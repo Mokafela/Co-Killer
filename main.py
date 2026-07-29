@@ -235,8 +235,9 @@ def write_split(by_country: dict[str, list[str]]) -> None:
     # Per-country files
     for cc, cfgs in by_country.items():
         renamed = []
+        flag = country_to_flag(cc)
         for cfg in cfgs:
-            renamed.append(rename_config(cfg, f"Mokafela-ConfigKiller #{counter}"))
+            renamed.append(rename_config(cfg, f"{flag} Mokafela-ConfigKiller #{counter}"))
             counter += 1
         
         b64 = base64.b64encode("\n".join(renamed).encode()).decode()
@@ -248,9 +249,10 @@ def write_split(by_country: dict[str, list[str]]) -> None:
     # Combined ALL file (reset counter and rename again for consistency)
     all_cfgs = []
     counter = 1
-    for cfgs in by_country.values():
+    for cc, cfgs in by_country.items():
+        flag = country_to_flag(cc)
         for cfg in cfgs:
-            all_cfgs.append(rename_config(cfg, f"Mokafela-ConfigKiller #{counter}"))
+            all_cfgs.append(rename_config(cfg, f"{flag} Mokafela-ConfigKiller #{counter}"))
             counter += 1
     
     b64_all = base64.b64encode("\n".join(all_cfgs).encode()).decode()
