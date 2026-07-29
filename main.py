@@ -72,6 +72,27 @@ def parse_host_port(config: str):
     return None
 
 
+def rename_config(config: str, new_name: str) -> str:
+    """Rename the config's remark/name field."""
+    try:
+        if config.startswith("vmess://"):
+            b64 = config[8:] + "=="
+            data = json.loads(base64.b64decode(b64).decode("utf-8"))
+            data["ps"] = new_name
+            new_b64 = base64.b64encode(json.dumps(data, ensure_ascii=False).encode()).decode().rstrip("=")
+            return f"vmess://{new_b64}"
+        elif config.startswith(("vless://", "trojan://", "ss://")):
+            # Parse URL, replace fragment (name after #)
+            p = urllib.parse.urlparse(config)
+            new_fragment = urllib.parse.quote(new_name)
+            return urllib.parse.urlunparse((
+                p.scheme, p.netloc, p.path, p.params, p.query, new_fragment
+            ))
+    except Exception:
+        pass
+    return config
+
+
 # ── step 1: TCP alive ─────────────────────────────────────────────────────────
 
 def tcp_alive(config: str) -> bool:
@@ -208,16 +229,30 @@ REPO_RAW = "https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split"
 def write_split(by_country: dict[str, list[str]]) -> None:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+    # Global counter for all configs
+    counter = 1
+
     # Per-country files
     for cc, cfgs in by_country.items():
-        b64 = base64.b64encode("\n".join(cfgs).encode()).decode()
+        renamed = []
+        for cfg in cfgs:
+            renamed.append(rename_config(cfg, f"Mokafela-ConfigKiller #{counter}"))
+            counter += 1
+        
+        b64 = base64.b64encode("\n".join(renamed).encode()).decode()
         path = os.path.join(OUTPUT_DIR, f"sub-{cc}.txt")
         with open(path, "w", encoding="utf-8") as f:
             f.write(b64)
-        print(f"  Wrote {len(cfgs):>4} configs → {path}")
+        print(f"  Wrote {len(renamed):>4} configs → {path}")
 
-    # Combined ALL file
-    all_cfgs = [cfg for cfgs in by_country.values() for cfg in cfgs]
+    # Combined ALL file (reset counter and rename again for consistency)
+    all_cfgs = []
+    counter = 1
+    for cfgs in by_country.values():
+        for cfg in cfgs:
+            all_cfgs.append(rename_config(cfg, f"Mokafela-ConfigKiller #{counter}"))
+            counter += 1
+    
     b64_all = base64.b64encode("\n".join(all_cfgs).encode()).decode()
     all_path = os.path.join(OUTPUT_DIR, "sub-ALL.txt")
     with open(all_path, "w", encoding="utf-8") as f:
