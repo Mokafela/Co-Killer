@@ -19,13 +19,13 @@
 ## 🔗 Subscription Links
 
 <!-- SUBS_START -->
-> **426 configs** across **29 countries** — updated every 15 minutes.
+> **422 configs** across **29 countries** — updated every 15 minutes.
 
 ### � All Configs
 
 | | | Link |
 | :---: | :---: | :--- |
-| 🌍 | **426** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-ALL.txt` |
+| 🌍 | **422** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-ALL.txt` |
 
 ### 🗺️ By Country
 
@@ -35,9 +35,9 @@
 | <img src="https://flagcdn.com/20x15/us.png" alt="US"> | US | **49** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-US.txt` |
 | <img src="https://flagcdn.com/20x15/nl.png" alt="NL"> | NL | **44** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-NL.txt` |
 | <img src="https://flagcdn.com/20x15/de.png" alt="DE"> | DE | **24** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-DE.txt` |
-| <img src="https://flagcdn.com/20x15/fr.png" alt="FR"> | FR | **20** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-FR.txt` |
+| <img src="https://flagcdn.com/20x15/fr.png" alt="FR"> | FR | **17** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-FR.txt` |
 | <img src="https://flagcdn.com/20x15/pl.png" alt="PL"> | PL | **15** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-PL.txt` |
-| <img src="https://flagcdn.com/20x15/ru.png" alt="RU"> | RU | **15** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-RU.txt` |
+| <img src="https://flagcdn.com/20x15/ru.png" alt="RU"> | RU | **14** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-RU.txt` |
 | <img src="https://flagcdn.com/20x15/kr.png" alt="KR"> | KR | **13** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-KR.txt` |
 | <img src="https://flagcdn.com/20x15/hk.png" alt="HK"> | HK | **12** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-HK.txt` |
 | <img src="https://flagcdn.com/20x15/ie.png" alt="IE"> | IE | **8** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-IE.txt` |
