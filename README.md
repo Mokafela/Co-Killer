@@ -19,13 +19,13 @@
 ## 🔗 Subscription Links
 
 <!-- SUBS_START -->
-> **406 configs** across **25 countries** — updated every 15 minutes.
+> **404 configs** across **25 countries** — updated every 15 minutes.
 
 ### � All Configs
 
 | | | Link |
 | :---: | :---: | :--- |
-| 🌍 | **406** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-ALL.txt` |
+| 🌍 | **404** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-ALL.txt` |
 
 ### 🗺️ By Country
 
@@ -34,7 +34,7 @@
 | <img src="https://flagcdn.com/20x15/ca.png" alt="CA"> | CA | **166** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-CA.txt` |
 | <img src="https://flagcdn.com/20x15/us.png" alt="US"> | US | **56** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-US.txt` |
 | <img src="https://flagcdn.com/20x15/nl.png" alt="NL"> | NL | **49** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-NL.txt` |
-| <img src="https://flagcdn.com/20x15/de.png" alt="DE"> | DE | **40** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-DE.txt` |
+| <img src="https://flagcdn.com/20x15/de.png" alt="DE"> | DE | **38** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-DE.txt` |
 | <img src="https://flagcdn.com/20x15/pl.png" alt="PL"> | PL | **26** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-PL.txt` |
 | <img src="https://flagcdn.com/20x15/fr.png" alt="FR"> | FR | **16** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-FR.txt` |
 | <img src="https://flagcdn.com/20x15/hk.png" alt="HK"> | HK | **15** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-HK.txt` |
