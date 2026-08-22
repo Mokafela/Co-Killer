@@ -19,22 +19,22 @@
 ## 🔗 لینک‌های اشتراک
 
 <!-- SUBS_START_FA -->
-> **403 configs** across **25 countries** — updated every 15 minutes.
+> **401 configs** across **25 countries** — updated every 15 minutes.
 
 ### � All Configs
 
 | | | Link |
 | :---: | :---: | :--- |
-| 🌍 | **403** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-ALL.txt` |
+| 🌍 | **401** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-ALL.txt` |
 
 ### 🗺️ By Country
 
 | 🏳️ | Country | Configs | Link |
 | :---: | :--- | :---: | :--- |
-| <img src="https://flagcdn.com/20x15/ca.png" alt="CA"> | CA | **166** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-CA.txt` |
-| <img src="https://flagcdn.com/20x15/us.png" alt="US"> | US | **56** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-US.txt` |
+| <img src="https://flagcdn.com/20x15/ca.png" alt="CA"> | CA | **164** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-CA.txt` |
+| <img src="https://flagcdn.com/20x15/us.png" alt="US"> | US | **58** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-US.txt` |
 | <img src="https://flagcdn.com/20x15/nl.png" alt="NL"> | NL | **47** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-NL.txt` |
-| <img src="https://flagcdn.com/20x15/de.png" alt="DE"> | DE | **39** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-DE.txt` |
+| <img src="https://flagcdn.com/20x15/de.png" alt="DE"> | DE | **37** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-DE.txt` |
 | <img src="https://flagcdn.com/20x15/pl.png" alt="PL"> | PL | **26** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-PL.txt` |
 | <img src="https://flagcdn.com/20x15/fr.png" alt="FR"> | FR | **16** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-FR.txt` |
 | <img src="https://flagcdn.com/20x15/hk.png" alt="HK"> | HK | **15** | `https://raw.githubusercontent.com/Mokafela/Co-Killer/master/split/sub-HK.txt` |
